@@ -1,0 +1,3 @@
+-- ADP PostgreSQL database entrypoint.
+-- The authoritative executable schema is ordered in migrations/001_initial.sql.
+-- Apply it with a migration runner; never execute this file on production.

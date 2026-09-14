@@ -1,0 +1,362 @@
+/* ═══════════════════════════════════════════
+   ADP Page Styles — Studio Edition
+   Editorial, Human, Mediterranean Clean
+   ═══════════════════════════════════════════ */
+
+/* ── Splash Screen ── */
+.splash-screen {
+  background: var(--canvas);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px 24px 36px 24px;
+  text-align: center;
+}
+
+.splash-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 140px;
+}
+
+.splash-badge-geo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--muted);
+  background: var(--canvas-soft);
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+}
+
+.splash-emblem-clean {
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  box-shadow: 0 12px 28px rgba(14, 33, 41, 0.2);
+  margin-bottom: 8px;
+}
+
+/* ── Grinta-style Progressive Onboarding ── */
+.onboarding-flow {
+  background: var(--canvas);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 20px 32px 20px;
+}
+
+.onboarding-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.onboarding-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  max-width: 140px;
+}
+
+.step-bar {
+  flex: 1;
+  height: 3.5px;
+  background: rgba(14, 33, 41, 0.1);
+  border-radius: var(--r-pill);
+  transition: all var(--t-normal);
+}
+
+.step-bar.active {
+  background: var(--ink);
+}
+
+.onboarding-step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 0;
+  animation: stepIn 260ms var(--ease);
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.onboarding-headline {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.onboarding-sub {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* ── Live e-Pass Card (Interactive & Apple Wallet standard) ── */
+.pass-card-wrap {
+  perspective: 1000px;
+  width: 100%;
+}
+
+.digital-pass {
+  width: 100%;
+  aspect-ratio: 1.58 / 1;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #091921 0%, #102632 100%);
+  color: #fff;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 16px 36px rgba(14, 33, 41, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.digital-pass::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -40%;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(213, 171, 114, 0.15) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* ── Home Dashboard ── */
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 18px 0;
+}
+
+.home-user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.stats-grid-card {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 16px 8px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.stat-col {
+  text-align: center;
+  position: relative;
+}
+
+.stat-col:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: var(--border);
+}
+
+.stat-number {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.action-card-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.action-card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--t-fast);
+}
+
+.action-card-btn:hover .action-card-icon {
+  border-color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.action-card-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ── Section Titles ── */
+.section-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  margin-top: 6px;
+}
+
+.section-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: 0.2px;
+}
+
+.section-link {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ocean);
+  cursor: pointer;
+}
+
+/* ── Filter Pills (Catalog) ── */
+.pills-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 14px;
+  scrollbar-width: none;
+}
+
+.pills-scroll::-webkit-scrollbar { display: none; }
+
+.pill-item {
+  padding: 7px 15px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.pill-item.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+/* ── Storytelling Project Card ── */
+.story-project-card {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 16px;
+  transition: all var(--t-fast);
+}
+
+.story-project-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-hover);
+}
+
+.story-project-header {
+  height: 120px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  color: #fff;
+}
+
+.story-project-body {
+  padding: 16px 18px;
+}
+
+/* ── Summit 2026 Page ── */
+.summit-hero {
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--r-lg);
+  padding: 22px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.summit-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 90% 20%, rgba(213, 171, 114, 0.18) 0%, transparent 60%);
+  pointer-events: none;
+}

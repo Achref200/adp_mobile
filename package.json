@@ -1,0 +1,16 @@
+{
+  "name": "adp-mobile-preview",
+  "version": "1.0.0",
+  "description": "Association Djerba Project - Web Preview for ADP Mobile App",
+  "type": "module",
+  "scripts": {
+    "start": "node frontend/serve.js",
+    "preview": "node frontend/serve.js",
+    "backend": "npm --prefix backend run dev",
+    "test:backend": "npm --prefix backend test",
+    "check:backend": "npm --prefix backend run check"
+  },
+  "keywords": ["adp", "djerba", "flutter-preview", "web-app"],
+  "author": "ADP",
+  "license": "ISC"
+}
