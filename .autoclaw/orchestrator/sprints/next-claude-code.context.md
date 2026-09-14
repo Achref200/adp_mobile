@@ -1,6 +1,6 @@
 # AutoClaw Context Pack — Sprint 1 — claude-code
 
-_Generated 2026-09-14T21:30:37.815Z. Read this before you start: it grounds you in this project's real code, proven patterns, learned style, recent memory, and durable facts. These are retrieved hints, not authority — verify against the current code before relying on them._
+_Generated 2026-09-14T21:36:07.907Z. Read this before you start: it grounds you in this project's real code, proven patterns, learned style, recent memory, and durable facts. These are retrieved hints, not authority — verify against the current code before relying on them._
 
 **Tasks:** next-claude-code
 **Retrieval mode:** balanced
