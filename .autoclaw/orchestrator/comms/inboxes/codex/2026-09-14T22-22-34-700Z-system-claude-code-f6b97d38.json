@@ -1,0 +1,28 @@
+{
+  "id": "msg-2026-09-14T22-22-34-700Z-f6b97d38",
+  "from": "claude-code",
+  "to": "codex",
+  "type": "system",
+  "timestamp": "2026-09-14T22:22:34.700Z",
+  "payload": {
+    "kind": "join_welcome",
+    "target_tool": "codex",
+    "invite_token": "join-ea343fc7a84260ccef",
+    "suggested_role": "orchestrator",
+    "suggested_agent_type": "supervisor",
+    "scope": [
+      "yo"
+    ],
+    "workspace": "c:\\Users\\Team_2\\proejcts\\adp_mobile",
+    "protocol_candidates": [
+      "docs/AGENT_SESSION_PROTOCOL.md",
+      ".autoclaw/orchestrator/AGENT_SESSION_PROTOCOL.md",
+      ".autoclaw/orchestrator/comms/agents/codex/rules.md",
+      ".claude/rules/cross-agent-protocol.md",
+      ".clinerules/cross-agent.md",
+      "AGENTS.md"
+    ],
+    "next_action": "Begin with REGISTER + SYNC, consume the invite, write a heartbeat/beacon, then report current inbox/board state before claiming work."
+  },
+  "requires_response": true
+}

@@ -12,6 +12,21 @@
       "status": "detected",
       "loop_mechanism": "slash-loop",
       "keepalive_template": "templates/keepalive/claude-code.md"
+    },
+    {
+      "id": "codex",
+      "name": "Codex",
+      "extension_id": null,
+      "detected": true,
+      "inbox_path": ".autoclaw/orchestrator/comms/inboxes/codex/",
+      "hooks_supported": false,
+      "last_heartbeat": null,
+      "status": "detected",
+      "rules_path": ".autoclaw\\orchestrator\\comms\\agents\\codex\\rules.md",
+      "last_detected_at": "2026-09-14T22:22:34.690Z",
+      "loop_mechanism": "cli-headless",
+      "keepalive_template": "templates/keepalive/codex.md",
+      "agent_type": "supervisor"
     }
   ],
   "ide": "Visual Studio Code",

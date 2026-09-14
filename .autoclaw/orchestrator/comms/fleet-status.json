@@ -1,9 +1,16 @@
 {
-  "agent_count": 1,
+  "agent_count": 2,
   "agents": [
     {
       "done": 0,
       "id": "claude-code",
+      "inflight": 0,
+      "role": "",
+      "status": "alive"
+    },
+    {
+      "done": 0,
+      "id": "codex",
       "inflight": 0,
       "role": "",
       "status": "alive"
@@ -15,7 +22,7 @@
     "total": 0
   },
   "cycle": "waiting",
-  "generated_at": "2026-09-14T15:22:39.245Z",
+  "generated_at": "2026-09-14T23:02:15.042Z",
   "lanes": {
     "awaiting_review": 0,
     "claimable": 0,
