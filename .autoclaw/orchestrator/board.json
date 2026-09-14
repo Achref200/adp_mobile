@@ -1,17 +1,10 @@
 {
-  "generated_at": "2026-09-14T16:04:39.658Z",
-  "generator": "orchestrator-loop",
+  "generated_at": "2026-09-14T21:32:38.371Z",
+  "generator": "board-watch",
   "fleet_size": 1,
   "live_count": 1,
   "claimable": [],
   "in_flight": [],
   "awaiting_review": [],
-  "stuck": [],
-  "wip_gate": {
-    "gated": false,
-    "depth": 0,
-    "cap": 6,
-    "reviewer_count": 1,
-    "reason": "review queue 0/6"
-  }
+  "stuck": []
 }
