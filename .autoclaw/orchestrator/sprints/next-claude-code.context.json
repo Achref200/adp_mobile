@@ -1,7 +1,7 @@
 {
   "schema": "autoclaw.contextPack.v1",
   "markdown_path": ".autoclaw/orchestrator/sprints/next-claude-code.context.md",
-  "generated_at": "2026-09-14T15:43:39.189Z",
+  "generated_at": "2026-09-14T16:00:09.428Z",
   "workspace_root_hash": "82e33846f5132070",
   "scope": {
     "task": "Next available work for claude-code: Auto-dispatched by orchestrator-loop. Agent claude-code is idle.",
@@ -22,54 +22,54 @@
     {
       "id": "kg:0",
       "kind": "kg",
-      "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789400290522-bc680d7f",
+      "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789401279789-fd91954b",
       "score": 0.25,
-      "captured_at": "2026-09-14T15:38:11.207Z",
+      "captured_at": "2026-09-14T15:54:39.999Z",
       "freshness": "current",
       "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
     },
     {
       "id": "kg:1",
       "kind": "kg",
-      "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789400290522-bc680d7f",
+      "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789401279789-fd91954b",
       "score": 0.25,
-      "captured_at": "2026-09-14T15:38:10.948Z",
+      "captured_at": "2026-09-14T15:54:39.889Z",
       "freshness": "current",
       "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
     },
     {
       "id": "kg:2",
       "kind": "kg",
-      "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789399981468-8c419ab4",
+      "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789400949452-187d80b5",
       "score": 0.25,
-      "captured_at": "2026-09-14T15:33:01.751Z",
+      "captured_at": "2026-09-14T15:49:09.574Z",
       "freshness": "current",
       "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
     },
     {
       "id": "kg:3",
       "kind": "kg",
-      "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789399981468-8c419ab4",
+      "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789400949452-187d80b5",
       "score": 0.25,
-      "captured_at": "2026-09-14T15:33:01.615Z",
+      "captured_at": "2026-09-14T15:49:09.513Z",
       "freshness": "current",
       "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
     },
     {
       "id": "kg:4",
       "kind": "kg",
-      "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789399651621-6c551bc5",
+      "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789400619517-90e329fe",
       "score": 0.25,
-      "captured_at": "2026-09-14T15:27:32.020Z",
+      "captured_at": "2026-09-14T15:43:39.705Z",
       "freshness": "current",
       "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
     },
     {
       "id": "kg:5",
       "kind": "kg",
-      "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789399651621-6c551bc5",
+      "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789400619517-90e329fe",
       "score": 0.25,
-      "captured_at": "2026-09-14T15:27:31.798Z",
+      "captured_at": "2026-09-14T15:43:39.603Z",
       "freshness": "current",
       "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
     }
@@ -78,32 +78,32 @@
     {
       "evidence_id": "kg:0",
       "content_hash": "d5343e5c8a770545bfd22635ec56c1cfd771b06247bd59fda60e8eeed56d9880",
-      "source_hash": "784a6b5ad47df85f77e57aaa7a7ec2fd8cad395b9592192ed11f8bb3623af54e"
+      "source_hash": "c6283475ef7b9d8d82194e345fa88b2bd65b2bcc6aac3a65ba95173cf50b42c4"
     },
     {
       "evidence_id": "kg:1",
       "content_hash": "d5343e5c8a770545bfd22635ec56c1cfd771b06247bd59fda60e8eeed56d9880",
-      "source_hash": "fa0d3cc3a2ca1471a3faa84eb1fc08eb0c1f4f6d32daefbc08b52e2d5db905ab"
+      "source_hash": "6db3896553817001e35b08ea4ea8d4aefb8d1ad31dbacf1970ff264bf8cfb75a"
     },
     {
       "evidence_id": "kg:2",
       "content_hash": "d5343e5c8a770545bfd22635ec56c1cfd771b06247bd59fda60e8eeed56d9880",
-      "source_hash": "4b971384abb945c077174d0827ea734a9d4e52b92009a492237c130403a2de25"
+      "source_hash": "92e2ae0d0313ff5c5ee37be0e653ff7eea5db9ce90a984d5c2c9d430ad4c1dbf"
     },
     {
       "evidence_id": "kg:3",
       "content_hash": "d5343e5c8a770545bfd22635ec56c1cfd771b06247bd59fda60e8eeed56d9880",
-      "source_hash": "f80cb30e6cacdcc103b3523641be772bca8ef294ab94c15b9af35c967579cfb7"
+      "source_hash": "d39485af8650a5f073fcbde96b3ee0a3660884ae0f2c27f45f37f233815a7163"
     },
     {
       "evidence_id": "kg:4",
       "content_hash": "d5343e5c8a770545bfd22635ec56c1cfd771b06247bd59fda60e8eeed56d9880",
-      "source_hash": "edf82546dafc8c8b7a4011549cf05e9b125d5f5c2f616a79eb0fd65aadc57d82"
+      "source_hash": "35f09a8b480b867ece43cf78dc183687b45ebb7f3ea6f5c7f9efd552d95230cd"
     },
     {
       "evidence_id": "kg:5",
       "content_hash": "d5343e5c8a770545bfd22635ec56c1cfd771b06247bd59fda60e8eeed56d9880",
-      "source_hash": "77ac744dd52b3ca61f0fac41ebbeb18c0b77d82d6046153b326bb1d78c1462e1"
+      "source_hash": "000c14192cdcaa9e0d0a75793b792d3644e214b330e0c798e697190aec0e3903"
     }
   ],
   "summary": {
@@ -122,7 +122,7 @@
       "mode: balanced",
       "query-mode: balanced"
     ],
-    "generated_at": "2026-09-14T15:43:39.189Z",
+    "generated_at": "2026-09-14T16:00:09.428Z",
     "mode": "balanced",
     "spine_block_ids": [
       "ctx:c:/users/team_2/proejcts/adp_mobile:project:root"
@@ -132,54 +132,54 @@
       {
         "id": "kg:0",
         "kind": "kg",
-        "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789400290522-bc680d7f",
+        "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789401279789-fd91954b",
         "score": 0.25,
-        "captured_at": "2026-09-14T15:38:11.207Z",
+        "captured_at": "2026-09-14T15:54:39.999Z",
         "freshness": "current",
         "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
       },
       {
         "id": "kg:1",
         "kind": "kg",
-        "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789400290522-bc680d7f",
+        "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789401279789-fd91954b",
         "score": 0.25,
-        "captured_at": "2026-09-14T15:38:10.948Z",
+        "captured_at": "2026-09-14T15:54:39.889Z",
         "freshness": "current",
         "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
       },
       {
         "id": "kg:2",
         "kind": "kg",
-        "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789399981468-8c419ab4",
+        "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789400949452-187d80b5",
         "score": 0.25,
-        "captured_at": "2026-09-14T15:33:01.751Z",
+        "captured_at": "2026-09-14T15:49:09.574Z",
         "freshness": "current",
         "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
       },
       {
         "id": "kg:3",
         "kind": "kg",
-        "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789399981468-8c419ab4",
+        "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789400949452-187d80b5",
         "score": 0.25,
-        "captured_at": "2026-09-14T15:33:01.615Z",
+        "captured_at": "2026-09-14T15:49:09.513Z",
         "freshness": "current",
         "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
       },
       {
         "id": "kg:4",
         "kind": "kg",
-        "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789399651621-6c551bc5",
+        "source_ref": "kg:evt:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code:progress:next-claude-code-1789400619517-90e329fe",
         "score": 0.25,
-        "captured_at": "2026-09-14T15:27:32.020Z",
+        "captured_at": "2026-09-14T15:43:39.705Z",
         "freshness": "current",
         "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
       },
       {
         "id": "kg:5",
         "kind": "kg",
-        "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789399651621-6c551bc5",
+        "source_ref": "kg:dispatch:C:/Users/Team_2/proejcts/adp_mobile:next-claude-code-1789400619517-90e329fe",
         "score": 0.25,
-        "captured_at": "2026-09-14T15:27:31.798Z",
+        "captured_at": "2026-09-14T15:43:39.603Z",
         "freshness": "current",
         "included_reason": "durable KG fact ranked by hybrid fusion (balanced)"
       }
