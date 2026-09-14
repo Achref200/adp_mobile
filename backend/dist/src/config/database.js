@@ -314,8 +314,12 @@ export const db = {
             console.log('[Database] Connected to PostgreSQL successfully.');
             return activeDb.query(sql, params);
         }
-        catch {
-            console.log('[Database] PostgreSQL unreachable on port 5432. Falling back to native persistent SQLite (database/adp.sqlite).');
+        catch (error) {
+            if (!env.ALLOW_SQLITE_FALLBACK) {
+                console.error('[Database] PostgreSQL connection failed and SQLite fallback is disabled.');
+                throw error;
+            }
+            console.warn('[Database] PostgreSQL unreachable. Using SQLite only because ALLOW_SQLITE_FALLBACK=true.');
             activeDb = createSqliteDb();
             return activeDb.query(sql, params);
         }
@@ -327,3 +331,7 @@ export const db = {
         return activeDb.connect();
     }
 };
+export async function databaseHealth() {
+    await db.query('SELECT 1');
+    return activeDb === pgPool ? 'postgresql' : 'sqlite';
+}

@@ -6,12 +6,20 @@ import { env } from './config/env.js';
 import { authRoutes } from './routes/auth-routes.js';
 import { apiRoutes } from './routes/api-routes.js';
 import { paymentRoutes } from './routes/payment-routes.js';
+import { databaseHealth } from './config/database.js';
 import { AppError } from './types/api.js';
 export function buildApp() {
     const app = Fastify({ logger: true });
     app.register(cors, { origin: env.APP_ORIGIN === '*' ? true : env.APP_ORIGIN });
     app.register(rawBody, { global: false, encoding: 'utf8', runFirst: true });
-    app.get('/health', async () => ({ ok: true }));
+    app.get('/health', async (_request, reply) => {
+        try {
+            return { ok: true, database: await databaseHealth() };
+        }
+        catch {
+            return reply.status(503).send({ ok: false, database: 'unavailable' });
+        }
+    });
     app.register(authRoutes, { prefix: '/v1/auth' });
     app.register(apiRoutes, { prefix: '/v1' });
     app.register(paymentRoutes, { prefix: '/v1' });

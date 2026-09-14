@@ -3,29 +3,44 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 abstract final class AdpColors {
-  // Mediterranean Warm Luxury Palette (Studio Parity)
-  static const canvas = Color(0xFFFBF9F5); // Warm chaux & sable djerbien
+  // ── Official ADP Brand Palette ──
+  // Primary: Teal ↔ Green gradient (from the official ADP logo)
+  // Secondary: warm terracotta accent (Mediterranean earth)
+  // Neutral: warm off-white canvas + deep ink text
+
+  // Background & Surfaces
+  static const canvas = Color(0xFFFBF9F5);   // Warm chaux & sable djerbien
   static const canvasSoft = Color(0xFFF4F1EA);
   static const surface = Color(0xFFFFFFFF);
   static const surfaceAlt = Color(0xFFF7F5EE);
 
-  static const ink = Color(0xFF0E2129); // Deep Mediterranean night ink
+  // Primary brand gradient endpoints (logo-inspired)
+  static const tealPrimary = Color(0xFF00C9C5);   // Bright cyan-teal (logo top-right)
+  static const tealDeep    = Color(0xFF008891);   // Deep teal (logo bottom-right)
+  static const greenPrimary = Color(0xFF8BC34A);  // Bright lime green (logo bottom-left)
+  static const greenMedium  = Color(0xFF4CAF7A);  // Medium teal-green (logo top-left)
+
+  // Secondary accent
+  static const terracotta = Color(0xFFD46238);   // Argile de Guellala
+  static const terracottaSoft = Color(0x17D46238);
+
+  // Legacy aliases kept for existing code compatibility
+  static const ocean = tealPrimary;          // Mer de Djerba (re-mapped to primary teal)
+  static const oceanSoft = Color(0x1700C9C5);
+  static const oceanDark = tealDeep;         // Deepest brand teal
+  static const sandGold = Color(0xFFD5AB72); // Sable d'or
+  static const success = Color(0xFF1F8A65);
+  static const successSoft = Color(0x1A1F8A65);
+
+  // Text & Neutral
+  static const ink = Color(0xFF0E2129);      // Deep Mediterranean night ink
   static const inkSoft = Color(0xFF2D424B);
   static const muted = Color(0xFF687B82);
   static const mutedLight = Color(0xFF9EADB4);
 
-  static const terracotta = Color(0xFFD46238); // Argile de Guellala
-  static const terracottaSoft = Color(0x17D46238);
-  static const ocean = Color(0xFF0D6274); // Mer de Djerba
-  static const oceanSoft = Color(0x170D6274);
-  static const oceanDark = Color(0xFF093E4A);
-  static const sandGold = Color(0xFFD5AB72);
-  static const success = Color(0xFF1F8A65);
-  static const successSoft = Color(0x1A1F8A65);
-
   // Backward-compatible aliases
-  static const navy = oceanDark;
-  static const lagoon = ocean;
+  static const navy = tealDeep;
+  static const lagoon = tealPrimary;
   static const sand = canvas;
   static const background = canvas;
   static const border = Color(0xFFE6E2D8);
@@ -49,26 +64,37 @@ ThemeData adpTheme() {
     secondary: AdpColors.terracotta,
     surface: AdpColors.surface,
   );
+  // Brand gradient used for primary color (teal→green, matching ADP logo)
+  final brandGradient = const LinearGradient(
+    colors: [AdpColors.tealPrimary, AdpColors.greenPrimary],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  final brandColor = AdpColors.tealPrimary;
+
   return ThemeData(
     useMaterial3: true,
-    colorScheme: scheme,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: brandColor,
+      brightness: Brightness.light,
+      primary: brandColor,
+      secondary: AdpColors.terracotta,
+      surface: AdpColors.surface,
+    ).copyWith(
+      primaryContainer: AdpColors.tealDeep,
+      secondaryContainer: AdpColors.terracottaSoft,
+    ),
     scaffoldBackgroundColor: AdpColors.canvas,
     textTheme:
         GoogleFonts.manropeTextTheme(Typography.material2021().black).copyWith(
       displayLarge: GoogleFonts.barlowCondensed(
-          fontSize: 56,
-          height: .9,
-          fontWeight: FontWeight.w800,
+          fontSize: 56, height: .9, fontWeight: FontWeight.w800,
           color: AdpColors.ink),
       displayMedium: GoogleFonts.barlowCondensed(
-          fontSize: 46,
-          height: .94,
-          fontWeight: FontWeight.w800,
+          fontSize: 46, height: .94, fontWeight: FontWeight.w800,
           color: AdpColors.ink),
       headlineMedium: GoogleFonts.barlowCondensed(
-          fontSize: 36,
-          height: .96,
-          fontWeight: FontWeight.w800,
+          fontSize: 36, height: .96, fontWeight: FontWeight.w800,
           color: AdpColors.ink),
       titleLarge: GoogleFonts.manrope(
           fontWeight: FontWeight.w800, color: AdpColors.ink),
@@ -81,10 +107,8 @@ ThemeData adpTheme() {
       elevation: 0,
       centerTitle: false,
       titleTextStyle: GoogleFonts.barlowCondensed(
-        fontSize: 24,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 0.2,
-        color: AdpColors.ink,
+        fontSize: 24, fontWeight: FontWeight.w800,
+        letterSpacing: 0.2, color: AdpColors.ink,
       ),
       iconTheme: const IconThemeData(color: AdpColors.ink),
     ),

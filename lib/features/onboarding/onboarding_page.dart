@@ -4,6 +4,75 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Official ADP Logo — Interlocking Teal↔Green Infinity/Diamond (mini version)
+class _AdpInfinityPainterMini extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final cx = w / 2;
+    final cy = h / 2;
+    final lw = w * 0.30;
+    final lh = h * 0.42;
+    final rCorner = w * 0.13;
+    final gap = w * 0.055;
+
+    Path roundedRect(double x, double y, double ww, double hh, double rr) {
+      final p = Path();
+      p.moveTo(x + rr, y);
+      p.lineTo(x + ww - rr, y);
+      p.quadraticBezierTo(x + ww, y, x + ww, y + rr);
+      p.lineTo(x + ww, y + hh - rr);
+      p.quadraticBezierTo(x + ww, y + hh, x + ww - rr, y + hh);
+      p.lineTo(x + rr, y + hh);
+      p.quadraticBezierTo(x, y + hh, x, y + hh - rr);
+      p.lineTo(x, y + rr);
+      p.quadraticBezierTo(x, y, x + rr, y);
+      p.close();
+      return p;
+    }
+
+    // Teal lobe (top-right) — solid brand color
+    final rx1 = cx + gap * 0.45;
+    final ry1 = cy - gap * 0.45;
+    canvas.drawPath(
+      roundedRect(rx1 - lw, ry1 - lh, lw * 2, lh * 2, rCorner),
+      Paint()
+        ..color = const Color(0xFF00A8A4)
+        ..style = PaintingStyle.fill,
+    );
+
+    // Green lobe (bottom-left) — solid brand color
+    final rx2 = cx - gap * 0.45;
+    final ry2 = cy + gap * 0.45;
+    canvas.drawPath(
+      roundedRect(rx2 - lw, ry2 - lh, lw * 2, lh * 2, rCorner),
+      Paint()
+        ..color = const Color(0xFF7CCB4A)
+        ..style = PaintingStyle.fill,
+    );
+
+    // Interlock bridges — solid colors
+    final bridgeW = w * 0.10;
+    final bridgeH = h * 0.03;
+    canvas.drawRect(
+      Rect.fromCenter(center: Offset(cx, cy - gap * 0.5), width: bridgeW, height: bridgeH),
+      Paint()
+        ..color = const Color(0xFF00A8A4)
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawRect(
+      Rect.fromCenter(center: Offset(cx, cy + gap * 0.5), width: bridgeW, height: bridgeH),
+      Paint()
+        ..color = const Color(0xFF7CCB4A)
+        ..style = PaintingStyle.fill,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
@@ -63,7 +132,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top Bar: Back · Step Indicators · Passer ──
+            // ── Top Bar: Back · Logo · Step Indicators · Passer ──
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
               child: Row(
@@ -71,6 +140,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   _CircleIconBtn(
                     icon: Icons.arrow_back_rounded,
                     onTap: _prev,
+                  ),
+                  const SizedBox(width: 14),
+                  // Official ADP logo mark in top bar
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AdpColors.surface,
+                      border: Border.all(
+                        color: AdpColors.ink.withValues(alpha: 0.08),
+                        width: 1,
+                      ),
+                    ),
+                    child: CustomPaint(
+                      size: const Size(20, 20),
+                      painter: _AdpInfinityPainterMini(),
+                    ),
                   ),
                   const SizedBox(width: 14),
                   // 4-segment step bar
@@ -472,170 +559,144 @@ class _OnboardingPageState extends State<OnboardingPage> {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF091921), Color(0xFF102632)],
-            ),
+            color: const Color(0xFF0E2129),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: AdpColors.ink.withValues(alpha: 0.28),
-                blurRadius: 36,
-                offset: const Offset(0, 16),
+                color: Color(0xFF0E2129),
+                blurRadius: 24,
+                offset: Offset(0, 12),
               ),
             ],
           ),
-          child: Stack(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Gold aura
-              Positioned(
-                top: -40,
-                right: -40,
-                child: Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AdpColors.sandGold.withValues(alpha: 0.15),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Header Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Header Row
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.explore_rounded,
-                              size: 22, color: AdpColors.sandGold),
-                          const SizedBox(width: 8),
-                          Text(
-                            'ADP DJERBA',
-                            style: GoogleFonts.barlowCondensed(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 9, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.14),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: const Text(
-                          '2026',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
+                      const Icon(Icons.explore_rounded,
+                          size: 22, color: AdpColors.sandGold),
+                      const SizedBox(width: 8),
+                      Text(
+                        'ADP DJERBA',
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  // Titulaire
-                  Text(
-                    'Titulaire',
-                    style: TextStyle(
-                      fontSize: 10,
-                      letterSpacing: 1,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white.withValues(alpha: 0.7),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'Membre ADP',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.3,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'ADP-DJB-2026-0001',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontFamily: 'monospace',
-                      color: AdpColors.sandGold,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  // Bottom Row
                   Container(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 9, vertical: 3),
                     decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.12),
-                        ),
-                      ),
+                      color: Colors.white.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(999),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'LIEN',
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white.withValues(alpha: 0.6),
-                              ),
-                            ),
-                            const SizedBox(height: 1),
-                            Text(
-                              _connection == 'diaspora'
-                                  ? 'Diaspora Europe'
-                                  : _connection == 'resident'
-                                      ? 'Résident Djerba'
-                                      : 'Ami de Djerba',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Icon(Icons.check_circle_rounded,
-                              size: 12, color: Color(0xFF6EE7B7)),
-                            const SizedBox(width: 4),
-                            const Text(
-                              'ACTIF',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF6EE7B7),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    child: const Text(
+                      '2026',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              // Titulaire
+              Text(
+                'Titulaire',
+                style: TextStyle(
+                  fontSize: 10,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                'Membre ADP',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'ADP-DJB-2026-0001',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontFamily: 'monospace',
+                  color: AdpColors.sandGold,
+                ),
+              ),
+              const SizedBox(height: 14),
+              // Bottom Row
+              Container(
+                padding: const EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.12),
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'LIEN',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withValues(alpha: 0.6),
+                          ),
+                        ),
+                        const SizedBox(height: 1),
+                        Text(
+                          _connection == 'diaspora'
+                              ? 'Diaspora Europe'
+                              : _connection == 'resident'
+                                  ? 'Résident Djerba'
+                                  : 'Ami de Djerba',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(Icons.check_circle_rounded,
+                            size: 12, color: Color(0xFF6EE7B7)),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'ACTIF',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF6EE7B7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

@@ -10,7 +10,15 @@
     "test:backend": "npm --prefix backend test",
     "check:backend": "npm --prefix backend run check"
   },
-  "keywords": ["adp", "djerba", "flutter-preview", "web-app"],
+  "keywords": [
+    "adp",
+    "djerba",
+    "flutter-preview",
+    "web-app"
+  ],
   "author": "ADP",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^3.2.3"
+  }
 }

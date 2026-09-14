@@ -767,6 +767,31 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
           </div>
 
+          <!-- Télécharger l'application -->
+          <div class="card" style="margin-bottom: 22px; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--canvas-soft); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              ${icon('download', 18, 'var(--ink)')}
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 14.5px; font-weight: 800; color: var(--ink); margin-bottom: 2px;">Télécharger l'application</div>
+              <div style="font-size: 11.5px; color: var(--muted); font-weight: 600;">Disponible sur iOS et Android</div>
+            </div>
+          </div>
+
+          <!-- Store Buttons -->
+          <div style="display: flex; gap: 10px; margin-bottom: 22px;">
+            <a href="https://apps.apple.com/fr/app/adp-djerba-project/id0000000000" target="_blank" style="flex: 1; text-decoration: none;" onclick="showToast('Ouverture de l\'App Store…', 'info')">
+              <div class="btn btn-primary btn-block" style="border-radius: 14px;">
+                ${icon('appleLogo', 14, '#fff')} App Store
+              </div>
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.djerbaproject.adp" target="_blank" style="flex: 1; text-decoration: none;" onclick="showToast('Ouverture du Google Play…', 'info')">
+              <div class="btn btn-primary btn-block" style="border-radius: 14px;">
+                ${icon('googleLogo', 14, '#fff')} Google Play
+              </div>
+            </a>
+          </div>
+
           <!-- Summit Highlight Card -->
           <div class="card" style="margin-bottom: 20px; border-left: 3.5px solid var(--sand-gold); cursor: pointer;" onclick="adpRouter.navigate('/summit')">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">

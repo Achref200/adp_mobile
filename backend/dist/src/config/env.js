@@ -3,6 +3,7 @@ import { z } from 'zod';
 const envSchema = z.object({
     PORT: z.coerce.number().int().positive().default(8080),
     DATABASE_URL: z.string().url(),
+    ALLOW_SQLITE_FALLBACK: z.coerce.boolean().default(false),
     JWT_ACCESS_SECRET: z.string().min(32),
     JWT_REFRESH_SECRET: z.string().min(32),
     EPASS_SIGNING_SECRET: z.string().min(32),

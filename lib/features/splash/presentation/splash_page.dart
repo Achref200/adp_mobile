@@ -113,58 +113,57 @@ class _SplashPageState extends State<SplashPage>
                     ),
                   ),
 
-                  // ── Center Architectural Emblem & Narrative ──
+                  // ── Center Official ADP Logo & Narrative ──
                   const Spacer(),
                   Center(
                     child: Container(
-                      width: 124,
-                      height: 124,
+                      width: 130,
+                      height: 130,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFFF7EFE4),
+                        color: AdpColors.surface,
                         border: Border.all(
-                            color: const Color(0xFFEADBCE), width: 1.5),
+                            color: AdpColors.ink.withValues(alpha: 0.08),
+                            width: 1.5),
                         boxShadow: [
                           BoxShadow(
-                            color: AdpColors.ink.withValues(alpha: 0.06),
-                            blurRadius: 24,
-                            offset: const Offset(0, 10),
+                            color: AdpColors.ink.withValues(alpha: 0.08),
+                            blurRadius: 30,
+                            offset: const Offset(0, 12),
                           ),
                         ],
                       ),
-                      child: Center(
-                        child: CustomPaint(
-                          size: const Size(84, 84),
-                          painter: _DjerbaDomePainter(),
-                        ),
+                      child: CustomPaint(
+                        size: const Size(96, 96),
+                        painter: _AdpInfinityPainter(),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 26),
+                  const SizedBox(height: 22),
                   Text(
                     'ASSOCIATION',
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 4,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 4.5,
                       color: AdpColors.muted,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     'DJERBA PROJECT',
                     style: GoogleFonts.barlowCondensed(
-                      fontSize: 34,
+                      fontSize: 36,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                      height: 1.05,
+                      letterSpacing: 1.5,
+                      height: 1.0,
                       color: AdpColors.ink,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 270),
-                    child: const Text(
+                    constraints: const BoxConstraints(maxWidth: 260),
+                    child: Text(
                       '« L\'île que nous chérissons, l\'avenir que nous bâtissons ensemble. »',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -179,11 +178,11 @@ class _SplashPageState extends State<SplashPage>
 
                   // ── Bottom Roots & Action ──
                   Container(
-                    width: 32,
-                    height: 2,
+                    width: 36,
+                    height: 3,
                     decoration: BoxDecoration(
-                      color: AdpColors.sandGold,
-                      borderRadius: BorderRadius.circular(1),
+                      color: const Color(0xFF00A8A4),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -258,66 +257,92 @@ class _SplashPageState extends State<SplashPage>
   }
 }
 
-/// Handcrafted Architectural Djerbian Archway, Sun, Sea, and Amphora
-class _DjerbaDomePainter extends CustomPainter {
+/**
+ * Official ADP Logo — Interlocking Teal+Green infinity mark.
+ * Drawn with solid brand colors, minimal and clean.
+ * Teal: #00A8A4  |  Green: #7CCB4A
+ */
+class _AdpInfinityPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
+    final cx = w / 2;
+    final cy = h / 2;
 
-    // Archway (dark ink)
-    final archPath = Path();
-    const archLeftFrac = 0.28;
-    const archRightFrac = 0.72;
-    const archBottomFrac = 0.82;
-    final archLeft = w * archLeftFrac;
-    final archRight = w * archRightFrac;
-    final archBottom = h * archBottomFrac;
-    final archTopY = h * 0.46;
-    final archRadius = (archRight - archLeft) / 2;
+    // Proportions: two rounded rectangles offset diagonally
+    final halfW = w * 0.30;
+    final halfH = h * 0.40;
+    final radius = w * 0.14;
+    final offset = w * 0.05;
 
-    archPath.moveTo(archLeft, archBottom);
-    archPath.lineTo(archLeft, archTopY);
-    archPath.arcToPoint(
-      Offset(archRight, archTopY),
-      radius: Radius.circular(archRadius),
-      clockwise: true,
-    );
-    archPath.lineTo(archRight, archBottom);
-    archPath.close();
+    // Rounded-rect path helper
+    Path lobe(double x, double y) {
+      final p = Path();
+      p.moveTo(x - halfW + radius, y - halfH);
+      p.lineTo(x + halfW - radius, y - halfH);
+      p.arcToPoint(
+        Offset(x + halfW, y - halfH + radius),
+        radius: Radius.circular(radius),
+      );
+      p.lineTo(x + halfW, y + halfH - radius);
+      p.arcToPoint(
+        Offset(x + halfW - radius, y + halfH),
+        radius: Radius.circular(radius),
+      );
+      p.lineTo(x - halfW + radius, y + halfH);
+      p.arcToPoint(
+        Offset(x - halfW, y + halfH - radius),
+        radius: Radius.circular(radius),
+      );
+      p.lineTo(x - halfW, y - halfH + radius);
+      p.arcToPoint(
+        Offset(x - halfW + radius, y - halfH),
+        radius: Radius.circular(radius),
+      );
+      p.close();
+      return p;
+    }
 
+    // Teal lobe (top-right)
     canvas.drawPath(
-        archPath,
-        Paint()
-          ..color = const Color(0xFF0E2129)
-          ..style = PaintingStyle.fill);
-
-    // Rising Golden Sun
-    canvas.drawCircle(
-      Offset(w * 0.5, h * 0.52),
-      14,
+      lobe(cx + offset, cy - offset),
       Paint()
-        ..color = const Color(0xFFD5AB72)
+        ..color = const Color(0xFF00A8A4)
         ..style = PaintingStyle.fill,
     );
 
-    // Sea Water
-    canvas.save();
-    canvas.clipPath(archPath);
+    // Green lobe (bottom-left)
+    canvas.drawPath(
+      lobe(cx - offset, cy + offset),
+      Paint()
+        ..color = const Color(0xFF7CCB4A)
+        ..style = PaintingStyle.fill,
+    );
+
+    // Interlock: teal bar over green at top
+    final barW = w * 0.10;
+    final barH = h * 0.03;
     canvas.drawRect(
-      Rect.fromLTRB(archLeft, h * 0.64, archRight, archBottom),
+      Rect.fromCenter(
+        center: Offset(cx, cy - offset * 0.5),
+        width: barW,
+        height: barH,
+      ),
       Paint()
-        ..color = const Color(0xFF0D6274)
+        ..color = const Color(0xFF00A8A4)
         ..style = PaintingStyle.fill,
     );
-    canvas.restore();
 
-    // Clay Finial (amphora pot on top)
-    canvas.drawCircle(
-      Offset(w * 0.5, h * 0.20),
-      4.5,
+    // Interlock: green bar over teal at bottom
+    canvas.drawRect(
+      Rect.fromCenter(
+        center: Offset(cx, cy + offset * 0.5),
+        width: barW,
+        height: barH,
+      ),
       Paint()
-        ..color = const Color(0xFFD46238)
+        ..color = const Color(0xFF7CCB4A)
         ..style = PaintingStyle.fill,
     );
   }
