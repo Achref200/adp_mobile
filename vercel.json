@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "cd backend && npm install && npm run build",
+  "buildCommand": "echo 'Static deployment: Flutter web build and backend dist are committed'",
   "outputDirectory": "build/web",
   "functions": {
     "api/index.js": {
-      "includeFiles": "backend/dist/**"
+      "includeFiles": "../backend/dist/**"
     }
   },
   "rewrites": [
