@@ -4,75 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Official ADP Logo — Interlocking Teal↔Green Infinity/Diamond (mini version)
-class _AdpInfinityPainterMini extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final cx = w / 2;
-    final cy = h / 2;
-    final lw = w * 0.30;
-    final lh = h * 0.42;
-    final rCorner = w * 0.13;
-    final gap = w * 0.055;
-
-    Path roundedRect(double x, double y, double ww, double hh, double rr) {
-      final p = Path();
-      p.moveTo(x + rr, y);
-      p.lineTo(x + ww - rr, y);
-      p.quadraticBezierTo(x + ww, y, x + ww, y + rr);
-      p.lineTo(x + ww, y + hh - rr);
-      p.quadraticBezierTo(x + ww, y + hh, x + ww - rr, y + hh);
-      p.lineTo(x + rr, y + hh);
-      p.quadraticBezierTo(x, y + hh, x, y + hh - rr);
-      p.lineTo(x, y + rr);
-      p.quadraticBezierTo(x, y, x + rr, y);
-      p.close();
-      return p;
-    }
-
-    // Teal lobe (top-right) — solid brand color
-    final rx1 = cx + gap * 0.45;
-    final ry1 = cy - gap * 0.45;
-    canvas.drawPath(
-      roundedRect(rx1 - lw, ry1 - lh, lw * 2, lh * 2, rCorner),
-      Paint()
-        ..color = const Color(0xFF00A8A4)
-        ..style = PaintingStyle.fill,
-    );
-
-    // Green lobe (bottom-left) — solid brand color
-    final rx2 = cx - gap * 0.45;
-    final ry2 = cy + gap * 0.45;
-    canvas.drawPath(
-      roundedRect(rx2 - lw, ry2 - lh, lw * 2, lh * 2, rCorner),
-      Paint()
-        ..color = const Color(0xFF7CCB4A)
-        ..style = PaintingStyle.fill,
-    );
-
-    // Interlock bridges — solid colors
-    final bridgeW = w * 0.10;
-    final bridgeH = h * 0.03;
-    canvas.drawRect(
-      Rect.fromCenter(center: Offset(cx, cy - gap * 0.5), width: bridgeW, height: bridgeH),
-      Paint()
-        ..color = const Color(0xFF00A8A4)
-        ..style = PaintingStyle.fill,
-    );
-    canvas.drawRect(
-      Rect.fromCenter(center: Offset(cx, cy + gap * 0.5), width: bridgeW, height: bridgeH),
-      Paint()
-        ..color = const Color(0xFF7CCB4A)
-        ..style = PaintingStyle.fill,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
@@ -154,9 +85,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         width: 1,
                       ),
                     ),
-                    child: CustomPaint(
-                      size: const Size(20, 20),
-                      painter: _AdpInfinityPainterMini(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Image.asset(
+                        'assets/brand/logo_adp.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),

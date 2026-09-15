@@ -1,12 +1,17 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ApiClient {
   ApiClient({Dio? dio, String? baseUrl})
       : _dio = dio ??
             Dio(BaseOptions(
+              // On web, the API is deployed on the same origin (Vercel) —
+              // use relative paths. On mobile, use ADP_API_URL or localhost.
               baseUrl: baseUrl ??
-                  const String.fromEnvironment('ADP_API_URL',
-                      defaultValue: 'http://localhost:8080'),
+                  (kIsWeb
+                      ? ''
+                      : const String.fromEnvironment('ADP_API_URL',
+                          defaultValue: 'http://localhost:8080')),
               connectTimeout: const Duration(seconds: 12),
               receiveTimeout: const Duration(seconds: 12),
             ));

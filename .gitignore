@@ -52,3 +52,6 @@ app.*.map.json
 
 # Runtime tooling state (never commit)
 .autoclaw/
+
+# Local SQLite database artifacts
+database/

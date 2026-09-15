@@ -21,7 +21,10 @@ let activeDb: DbClient;
 function createSqliteDb(): DbClient {
   const { DatabaseSync } = (process as any).getBuiltinModule ? (process as any).getBuiltinModule('node:sqlite') : require('node:sqlite');
   
-  const dbDir = path.resolve(process.cwd(), 'database');
+  // On serverless platforms (Vercel) only /tmp is writable.
+  const dbDir = process.env.VERCEL
+    ? '/tmp/adp-db'
+    : path.resolve(process.cwd(), 'database');
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
   }

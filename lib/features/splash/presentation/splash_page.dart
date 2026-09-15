@@ -133,9 +133,12 @@ class _SplashPageState extends State<SplashPage>
                           ),
                         ],
                       ),
-                      child: CustomPaint(
-                        size: const Size(96, 96),
-                        painter: _AdpInfinityPainter(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(17),
+                        child: Image.asset(
+                          'assets/brand/logo_adp.png',
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
@@ -257,96 +260,3 @@ class _SplashPageState extends State<SplashPage>
   }
 }
 
-/**
- * Official ADP Logo — Interlocking Teal+Green infinity mark.
- * Drawn with solid brand colors, minimal and clean.
- * Teal: #00A8A4  |  Green: #7CCB4A
- */
-class _AdpInfinityPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final cx = w / 2;
-    final cy = h / 2;
-
-    // Proportions: two rounded rectangles offset diagonally
-    final halfW = w * 0.30;
-    final halfH = h * 0.40;
-    final radius = w * 0.14;
-    final offset = w * 0.05;
-
-    // Rounded-rect path helper
-    Path lobe(double x, double y) {
-      final p = Path();
-      p.moveTo(x - halfW + radius, y - halfH);
-      p.lineTo(x + halfW - radius, y - halfH);
-      p.arcToPoint(
-        Offset(x + halfW, y - halfH + radius),
-        radius: Radius.circular(radius),
-      );
-      p.lineTo(x + halfW, y + halfH - radius);
-      p.arcToPoint(
-        Offset(x + halfW - radius, y + halfH),
-        radius: Radius.circular(radius),
-      );
-      p.lineTo(x - halfW + radius, y + halfH);
-      p.arcToPoint(
-        Offset(x - halfW, y + halfH - radius),
-        radius: Radius.circular(radius),
-      );
-      p.lineTo(x - halfW, y - halfH + radius);
-      p.arcToPoint(
-        Offset(x - halfW + radius, y - halfH),
-        radius: Radius.circular(radius),
-      );
-      p.close();
-      return p;
-    }
-
-    // Teal lobe (top-right)
-    canvas.drawPath(
-      lobe(cx + offset, cy - offset),
-      Paint()
-        ..color = const Color(0xFF00A8A4)
-        ..style = PaintingStyle.fill,
-    );
-
-    // Green lobe (bottom-left)
-    canvas.drawPath(
-      lobe(cx - offset, cy + offset),
-      Paint()
-        ..color = const Color(0xFF7CCB4A)
-        ..style = PaintingStyle.fill,
-    );
-
-    // Interlock: teal bar over green at top
-    final barW = w * 0.10;
-    final barH = h * 0.03;
-    canvas.drawRect(
-      Rect.fromCenter(
-        center: Offset(cx, cy - offset * 0.5),
-        width: barW,
-        height: barH,
-      ),
-      Paint()
-        ..color = const Color(0xFF00A8A4)
-        ..style = PaintingStyle.fill,
-    );
-
-    // Interlock: green bar over teal at bottom
-    canvas.drawRect(
-      Rect.fromCenter(
-        center: Offset(cx, cy + offset * 0.5),
-        width: barW,
-        height: barH,
-      ),
-      Paint()
-        ..color = const Color(0xFF7CCB4A)
-        ..style = PaintingStyle.fill,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
