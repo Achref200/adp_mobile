@@ -17,7 +17,8 @@ class ApiAdpRepository
         NetworkingRepository,
         NotificationRepository,
         EPassRepository,
-        PaymentStatusRepository {
+        PaymentStatusRepository,
+        PrivacyRepository {
   ApiAdpRepository(ApiClient api, SecureSessionStore store, [OfflineCache? cache])
       : _api = api,
         _authenticated = AuthenticatedApiClient(api, store),
@@ -135,6 +136,25 @@ class ApiAdpRepository
               read: json['readAt'] != null))
           .toList(growable: false);
   @override
+  Future<void> markRead(String notificationId) =>
+      _authenticated.post('/v1/notifications/$notificationId/read');
+  @override
+  Future<void> markAllRead() =>
+      _authenticated.post('/v1/notifications/read-all');
+
+  // ── PrivacyRepository (RGPD) ──
+  @override
+  Future<void> recordConsent(
+          {required String purpose, required bool granted}) async =>
+      await _authenticated
+          .post('/v1/privacy/consents', data: {'purpose': purpose, 'granted': granted});
+  @override
+  Future<Map<String, dynamic>> exportData() async =>
+      (await _authenticated.get('/v1/privacy/export')).data as Map<String, dynamic>;
+  @override
+  Future<void> requestErasure() async =>
+      await _authenticated.post('/v1/privacy/erasure-requests');
+  @override
   Future<EPass> currentEPass() async {
     final json = (await _authenticated.get('/v1/me/e-pass')).data
         as Map<String, dynamic>;
@@ -143,6 +163,17 @@ class ApiAdpRepository
         status: MembershipStatus.values.byName(json['status'] as String),
         validUntil: DateTime.parse(json['validUntil'] as String),
         qrPayload: json['qrPayload'] as String);
+  }
+  @override
+  Future<EPassVerification> verifyPass(String qrPayload) async {
+    final json = (await _authenticated.get('/v1/e-pass/verify/$qrPayload'))
+        .data as Map<String, dynamic>;
+    return EPassVerification(
+        valid: json['valid'] as bool,
+        status: MembershipStatus.values.byName(json['status'] as String),
+        validUntil: json['validUntil'] == null
+            ? null
+            : DateTime.parse(json['validUntil'] as String));
   }
   @override
   Future<CheckoutVerification> verifyCheckout(String checkoutIntentId) async {

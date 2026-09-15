@@ -5,6 +5,7 @@ import 'package:adp_mobile/features/epass/presentation/epass_cubit.dart';
 import 'package:adp_mobile/features/auth/presentation/auth_cubit.dart';
 import 'package:adp_mobile/features/shared/domain/models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -39,16 +40,19 @@ class EPassPage extends StatelessWidget {
                 ],
               ),
               child: IconButton(
-                tooltip: 'Partager le pass',
+                tooltip: 'Copier le code du pass',
                 padding: EdgeInsets.zero,
-                icon: const Icon(Icons.share_outlined, color: AdpColors.ink, size: 18),
+                icon: const Icon(Icons.copy_outlined, color: AdpColors.ink, size: 18),
                 onPressed: () {
+                  final pass = context.read<EPassCubit>().state.data;
+                  if (pass == null) return;
+                  Clipboard.setData(ClipboardData(text: pass.qrPayload));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Lien du pass copié'),
+                    const SnackBar(
+                      content: Text('Code du pass copié dans le presse-papiers'),
                       behavior: SnackBarBehavior.floating,
                       backgroundColor: AdpColors.ink,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                     ),
                   );
                 },
@@ -70,6 +74,7 @@ class EPassPage extends StatelessWidget {
 
           final pass = state.data!;
           final user = context.read<AuthCubit>().state.session?.user;
+          final isExpired = DateTime.now().isAfter(pass.validUntil);
           return RefreshIndicator(
             onRefresh: context.read<EPassCubit>().load,
             color: AdpColors.sandGold,
@@ -77,6 +82,29 @@ class EPassPage extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               children: [
+                if (isExpired) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: AdpColors.terracotta.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AdpColors.terracotta.withValues(alpha: 0.4)),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.error_outline_rounded, size: 18, color: AdpColors.terracotta),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Ce pass a expiré. Renouvelez votre cotisation pour le réactiver.',
+                            style: TextStyle(fontSize: 12.5, color: AdpColors.terracotta, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 _PassCard(pass: pass, user: user),
                 const SizedBox(height: 18),
                 _QrCodeBox(qrPayload: pass.qrPayload),
@@ -92,21 +120,12 @@ class EPassPage extends StatelessWidget {
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
-                        icon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
+                        icon: const Icon(Icons.verified_user_outlined, size: 18),
                         label: const Text(
-                          'Ajouter au Wallet',
+                          'Vérifier le pass',
                           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                         ),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Ajouté à votre Apple / Google Wallet'),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: const Color(0xFF10B981),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                          );
-                        },
+                        onPressed: () => _verifyPass(context),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -118,18 +137,19 @@ class EPassPage extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
-                        icon: const Icon(Icons.download_outlined, size: 18),
+                        icon: const Icon(Icons.copy_outlined, size: 18),
                         label: const Text(
-                          'Attestation PDF',
+                          'Copier le code',
                           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                         ),
                         onPressed: () {
+                          Clipboard.setData(ClipboardData(text: pass.qrPayload));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Attestation officielle PDF générée'),
+                            const SnackBar(
+                              content: Text('Code du pass copié'),
                               behavior: SnackBarBehavior.floating,
                               backgroundColor: AdpColors.navy,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                             ),
                           );
                         },
@@ -176,17 +196,14 @@ class _PassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final expired = DateTime.now().isAfter(pass.validUntil);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F2633), Color(0xFF1B3D4F), Color(0xFF0A1821)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AdpColors.depthTeal,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F2633).withValues(alpha: 0.35),
+            color: AdpColors.depthTeal.withValues(alpha: 0.30),
             blurRadius: 22,
             offset: const Offset(0, 10),
           ),
@@ -300,7 +317,8 @@ class _PassCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      DateFormat('dd MMMM yyyy').format(pass.validUntil),
+                      DateFormat('dd MMMM yyyy', 'fr_FR')
+                          .format(pass.validUntil),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
@@ -310,13 +328,23 @@ class _PassCard extends StatelessWidget {
                   ],
                 ),
                 Row(
-                  children: const [
-                    Icon(Icons.verified_rounded, color: Color(0xFF6EE7B7), size: 16),
-                    SizedBox(width: 4),
+                  children: [
+                    Icon(
+                      expired
+                          ? Icons.error_outline_rounded
+                          : Icons.verified_rounded,
+                      color: expired
+                          ? AdpColors.terracotta
+                          : const Color(0xFF6EE7B7),
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
                     Text(
-                      'CERTIFIÉ',
+                      expired ? 'EXPIRÉ' : 'CERTIFIÉ',
                       style: TextStyle(
-                        color: Color(0xFF6EE7B7),
+                        color: expired
+                            ? AdpColors.terracotta
+                            : const Color(0xFF6EE7B7),
                         fontWeight: FontWeight.w800,
                         fontSize: 11,
                         letterSpacing: 0.5,
@@ -334,10 +362,65 @@ class _PassCard extends StatelessWidget {
 
   String _membershipLabel(MembershipStatus status) => switch (status) {
         MembershipStatus.active => 'MEMBRE ACTIF',
-        MembershipStatus.paymentConfirmed => 'PAIEMENT CONFIRME',
+        MembershipStatus.paymentConfirmed => 'PAIEMENT CONFIRMÉ',
         MembershipStatus.pendingReview => 'EN VALIDATION',
         _ => 'STATUT ADP',
       };
+}
+
+/// Asks the backend to re-validate the current pass (HMAC signature + live
+/// membership status) and shows the result in a dialog.
+Future<void> _verifyPass(BuildContext context) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final cubit = context.read<EPassCubit>();
+  messenger.showSnackBar(const SnackBar(
+    content: Text('Vérification en cours…'),
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: AdpColors.ink,
+  ));
+  final result = await cubit.verifyCurrentPass();
+  if (!messenger.mounted || !context.mounted) return;
+  messenger.clearSnackBars();
+  if (result == null) {
+    messenger.showSnackBar(const SnackBar(
+      content: Text('Impossible de vérifier le pass (connexion indisponible).'),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: AdpColors.terracotta,
+    ));
+    return;
+  }
+  await showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      backgroundColor: AdpColors.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Row(
+        children: [
+          Icon(
+            result.valid
+                ? Icons.verified_rounded
+                : Icons.gpp_bad_rounded,
+            color: result.valid ? const Color(0xFF059669) : AdpColors.terracotta,
+          ),
+          const SizedBox(width: 8),
+          Text(result.valid ? 'Pass valide' : 'Pass non valide',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+        ],
+      ),
+      content: Text(
+        result.valid
+            ? 'Ce pass est authentique et actif. Statut : ${result.status.name}. Valable jusqu\'au ${DateFormat('dd/MM/yyyy').format(result.validUntil!)}.'
+            : 'Ce pass n\'est plus valide (statut actuel : ${result.status.name}). Contactez l\'association pour réactiver votre adhésion.',
+        style: const TextStyle(fontSize: 13.5, height: 1.5),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(),
+          child: const Text('Fermer'),
+        ),
+      ],
+    ),
+  );
 }
 
 class _QrCodeBox extends StatelessWidget {

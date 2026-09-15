@@ -13,6 +13,7 @@ import 'package:adp_mobile/features/donations/presentation/donation_cubit.dart';
 import 'package:adp_mobile/features/networking/presentation/networking_cubit.dart';
 import 'package:adp_mobile/features/epass/presentation/epass_cubit.dart';
 import 'package:adp_mobile/features/payments/presentation/payment_status_cubit.dart';
+import 'package:adp_mobile/features/profile/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app_links/app_links.dart';
@@ -81,15 +82,17 @@ class _AdpAppState extends State<AdpApp> {
                   NetworkingCubit(AppDependencies.networkingRepository())
                     ..load()),
           BlocProvider(
-              create: (_) =>
-                  EPassCubit(AppDependencies.ePassRepository())..load()),
+              create: (_) => EPassCubit(AppDependencies.ePassRepository())),
           BlocProvider(create: (_) => NotificationCubit()..restore()),
           BlocProvider(
               create: (_) =>
-                  InboxCubit(AppDependencies.notificationRepository())..load()),
-          BlocProvider(
-              create: (_) => PaymentStatusCubit(
+                  InboxCubit(AppDependencies.notificationRepository())..load()),          BlocProvider(
+              create: (_) =>
+                  PaymentStatusCubit(
                   AppDependencies.paymentStatusRepository())),
+          BlocProvider(
+              create: (_) =>
+                  ProfileCubit(AppDependencies.privacyRepository())),
         ],
         child: MaterialApp.router(
           title: 'ADP — Association Djerba Project',
@@ -101,6 +104,12 @@ class _AdpAppState extends State<AdpApp> {
               builder: (context, authState) {
                 final path = appRouter.routeInformationProvider.value.uri.path;
                 final requiresAccount = _protectedPaths.contains(path);
+                // (Re)load session-scoped data once authentication resolves.
+                if (authState.status == AuthStatus.authenticated) {
+                  context.read<EPassCubit>().load();
+                  context.read<InboxCubit>().load();
+                  context.read<MembershipCubit>().load();
+                }
                 if (requiresAccount && authState.status != AuthStatus.authenticated) {
                   if (authState.status == AuthStatus.unauthenticated || authState.status == AuthStatus.failure) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {

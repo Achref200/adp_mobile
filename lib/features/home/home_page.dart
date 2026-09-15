@@ -10,7 +10,6 @@ import 'package:adp_mobile/features/shared/domain/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -42,10 +41,6 @@ class HomePage extends StatelessWidget {
                 // ── 4 Direct Action Buttons ──
                 const _ActionGrid(),
                 const SizedBox(height: 18),
-
-                // ── Download App Card ──
-                const _DownloadAppCard(),
-                const SizedBox(height: 20),
 
                 // ── Summit 2026 Highlight Card ──
                 const _SummitCard(),
@@ -329,23 +324,9 @@ class _ActionCard extends StatelessWidget {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AdpColors.tealPrimary.withValues(alpha: 0.08),
-                      AdpColors.greenPrimary.withValues(alpha: 0.08),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: AdpColors.tealDeep.withValues(alpha: 0.07),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AdpColors.ink.withValues(alpha: 0.06)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AdpColors.ink.withValues(alpha: 0.04),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+                  border: Border.all(color: AdpColors.stroke),
                 ),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
@@ -468,17 +449,11 @@ class _ProjectStoryCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          // Dark header with category badge
+          // Solid deep-ink header with category badge
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF0A1C24), Color(0xFF153A47)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            decoration: const BoxDecoration(color: AdpColors.ink),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -488,12 +463,7 @@ class _ProjectStoryCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AdpColors.tealPrimary.withValues(alpha: 0.25),
-                            AdpColors.greenPrimary.withValues(alpha: 0.15),
-                          ],
-                        ),
+                        color: Colors.white.withValues(alpha: 0.14),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
@@ -604,14 +574,10 @@ class _NewsCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                  decoration: BoxDecoration(                      gradient: LinearGradient(
-                        colors: [
-                          AdpColors.tealPrimary.withValues(alpha: 0.15),
-                          AdpColors.greenPrimary.withValues(alpha: 0.10),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+                  decoration: BoxDecoration(
+                    color: AdpColors.tealDeep.withValues(alpha: 0.09),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                     child: Text(
                       article.category,
                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AdpColors.tealDeep),
@@ -711,210 +677,6 @@ class _QuietState extends StatelessWidget {
   const _QuietState({required this.text});
   final String text;
   @override
-  Widget build(BuildContext context) => Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AdpColors.muted));
-}
-
-// ─────────────────────────────────────────────
-// Télécharger l'application (App Store / Play Store)
-// ─────────────────────────────────────────────
-class _DownloadAppCard extends StatelessWidget {
-  const _DownloadAppCard();
-
-  // TODO: Replace with real store URLs once the app is published.
-  static const _appStoreUrl = 'https://apps.apple.com/fr/app/adp-djerba-project/id0000000000';
-  static const _playStoreUrl = 'https://play.google.com/store/apps/details?id=com.djerbaproject.adp';
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AdpColors.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AdpColors.ink.withValues(alpha: 0.06)),
-        boxShadow: [
-          BoxShadow(
-            color: AdpColors.ink.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: AdpColors.ink.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.download_rounded, size: 18, color: AdpColors.ink),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Télécharger l\'application',
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w800,
-                        color: AdpColors.ink,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Disponible sur iOS et Android',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: AdpColors.muted,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              // App Store button
-              Expanded(
-                child: _DownloadBtn(
-                  icon: _AppStoreIcon(),
-                  label: 'App Store',
-                  onTap: () => openStoreLink(_appStoreUrl, context),
-                ),
-              ),
-              const SizedBox(width: 10),
-              // Play Store button
-              Expanded(
-                child: _DownloadBtn(
-                  icon: _PlayStoreIcon(),
-                  label: 'Google Play',
-                  onTap: () => openStoreLink(_playStoreUrl, context),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Future<void> openStoreLink(String url, BuildContext context) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Impossible d'ouvrir le store. Copiez le lien manuellement."),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-}
-
-class _DownloadBtn extends StatelessWidget {
-  const _DownloadBtn({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-  final Widget icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AdpColors.tealPrimary, AdpColors.greenPrimary],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: AdpColors.tealDeep.withValues(alpha: 0.25),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 4,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icon,
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AppStoreIcon extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // Inline SVG-like representation using custom paint would be heavy;
-    // use a simple iconic placeholder that matches the ADP style.
-    return Container(
-      width: 22,
-      height: 22,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: const Icon(
-        Icons.apple_rounded,
-        size: 12,
-        color: Colors.white,
-      ),
-    );
-  }
-}
-
-class _PlayStoreIcon extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 22,
-      height: 22,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: const Icon(
-        Icons.android_rounded,
-        size: 12,
-        color: Colors.white,
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AdpColors.muted));
 }

@@ -12,6 +12,7 @@ import 'package:adp_mobile/features/news/presentation/news_page.dart';
 import 'package:adp_mobile/features/notifications/presentation/notifications_page.dart';
 import 'package:adp_mobile/features/payments/presentation/payment_return_page.dart';
 import 'package:adp_mobile/features/onboarding/onboarding_page.dart';
+import 'package:adp_mobile/features/profile/legal_page.dart';
 import 'package:adp_mobile/features/profile/profile_page.dart';
 import 'package:adp_mobile/features/projects/projects_page.dart';
 import 'package:adp_mobile/features/splash/presentation/splash_page.dart';
@@ -26,6 +27,15 @@ final appRouter = GoRouter(initialLocation: '/splash', routes: [
   GoRoute(
       path: '/auth/forgot-password',
       builder: (_, __) => const ForgotPasswordPage()),
+  GoRoute(
+      path: '/legal/terms',
+      builder: (_, __) => const LegalPage(document: 'terms')),
+  GoRoute(
+      path: '/legal/privacy',
+      builder: (_, __) => const LegalPage(document: 'privacy')),
+  GoRoute(
+      path: '/legal/data-deletion',
+      builder: (_, __) => const LegalPage(document: 'data-deletion')),
   GoRoute(
       path: '/membership/start', builder: (_, __) => const MembershipPage()),
   GoRoute(

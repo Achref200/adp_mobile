@@ -10,6 +10,8 @@ class AppDependencies {
   AppDependencies._();
   static const useMock =
       bool.fromEnvironment('ADP_USE_MOCK', defaultValue: false);
+  // Type comes from the conditional-import barrel: native SecureSessionStore on
+  // iOS/Android, in-memory SecureSessionStore on web.
   static final _store = SecureSessionStore();
   static AuthRepository authRepository() => useMock
       ? MockAuthRepository(_store)
@@ -58,6 +60,11 @@ class AppDependencies {
   }
 
   static PaymentStatusRepository paymentStatusRepository() {
+    if (useMock) return mockRepository();
+    return apiRepository();
+  }
+
+  static PrivacyRepository privacyRepository() {
     if (useMock) return mockRepository();
     return apiRepository();
   }

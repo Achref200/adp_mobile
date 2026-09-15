@@ -24,6 +24,12 @@ abstract final class AdpColors {
   static const terracotta = Color(0xFFD46238);   // Argile de Guellala
   static const terracottaSoft = Color(0x17D46238);
 
+  /// Deep brand teal used for solid primary surfaces (logo-inspired, no gradients).
+  static const depthTeal = Color(0xFF0D5C66);
+
+  /// Hairline stroke used consistently across cards and dividers.
+  static const stroke = Color(0xFFE7E2D8);
+
   // Legacy aliases kept for existing code compatibility
   static const ocean = tealPrimary;          // Mer de Djerba (re-mapped to primary teal)
   static const oceanSoft = Color(0x1700C9C5);
@@ -57,20 +63,8 @@ abstract final class AdpSpace {
 }
 
 ThemeData adpTheme() {
-  final scheme = ColorScheme.fromSeed(
-    seedColor: AdpColors.ocean,
-    brightness: Brightness.light,
-    primary: AdpColors.ocean,
-    secondary: AdpColors.terracotta,
-    surface: AdpColors.surface,
-  );
-  // Brand gradient used for primary color (teal→green, matching ADP logo)
-  final brandGradient = const LinearGradient(
-    colors: [AdpColors.tealPrimary, AdpColors.greenPrimary],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-  final brandColor = AdpColors.tealPrimary;
+  // Solid brand teal from the official ADP logo — no gradients anywhere.
+  const brandColor = AdpColors.tealDeep;
 
   return ThemeData(
     useMaterial3: true,
@@ -81,7 +75,7 @@ ThemeData adpTheme() {
       secondary: AdpColors.terracotta,
       surface: AdpColors.surface,
     ).copyWith(
-      primaryContainer: AdpColors.tealDeep,
+      primaryContainer: AdpColors.tealDeep.withValues(alpha: 0.12),
       secondaryContainer: AdpColors.terracottaSoft,
     ),
     scaffoldBackgroundColor: AdpColors.canvas,
@@ -116,9 +110,46 @@ ThemeData adpTheme() {
       color: AdpColors.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: BorderSide(color: AdpColors.ink.withValues(alpha: 0.06), width: 1),
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: AdpColors.stroke, width: 1),
       ),
+    ),
+    dividerTheme: const DividerThemeData(
+      color: AdpColors.stroke,
+      thickness: 1,
+      space: 1,
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: AdpColors.tealDeep.withValues(alpha: 0.08),
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      labelStyle: const TextStyle(
+        fontSize: 10.5,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.4,
+        color: AdpColors.tealDeep,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+    ),
+    tabBarTheme: const TabBarThemeData(
+      labelColor: AdpColors.ink,
+      unselectedLabelColor: AdpColors.muted,
+      indicatorColor: AdpColors.tealDeep,
+      indicatorSize: TabBarIndicatorSize.label,
+      dividerColor: AdpColors.stroke,
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected) ? Colors.white : Colors.white),
+      trackColor: WidgetStateProperty.resolveWith((states) =>
+          states.contains(WidgetState.selected)
+              ? AdpColors.tealDeep
+              : const Color(0xFFDCD8CF)),
+      trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+    ),
+    listTileTheme: const ListTileThemeData(
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      iconColor: AdpColors.ink,
     ),
     navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AdpColors.surface,
@@ -181,13 +212,15 @@ ThemeData adpTheme() {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AdpColors.surface,
+      hintStyle: const TextStyle(color: AdpColors.mutedLight, fontSize: 13.5),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AdpColors.stroke, width: 1)),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AdpColors.ink, width: 1.5)),
+        borderSide: const BorderSide(color: AdpColors.tealDeep, width: 1.5)),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AdpColors.terracotta)),

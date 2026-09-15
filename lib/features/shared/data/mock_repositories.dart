@@ -12,7 +12,8 @@ class MockAdpRepository
         NetworkingRepository,
         NotificationRepository,
         EPassRepository,
-        PaymentStatusRepository {
+        PaymentStatusRepository,
+        PrivacyRepository {
   static final _user = User(
       id: 'usr_001',
       firstName: 'Amel',
@@ -39,6 +40,7 @@ class MockAdpRepository
   Future<Uri> createMembershipCheckoutUrl(String membershipId) async =>
       Uri.parse('https://www.helloasso.com/associations/adp/adhesions');
   @override
+  @override
   Future<EPass> currentEPass() async {
     if (_membership.status != MembershipStatus.active ||
         _membership.expiresAt == null) {
@@ -50,6 +52,12 @@ class MockAdpRepository
         validUntil: _membership.expiresAt!,
         qrPayload: 'ADP:mem_001:verify-server-side');
   }
+  @override
+  Future<EPassVerification> verifyPass(String qrPayload) async =>
+      EPassVerification(
+          valid: _membership.status == MembershipStatus.active,
+          status: _membership.status,
+          validUntil: _membership.expiresAt);
   @override
   Future<List<Project>> list() async => const [
         Project(
@@ -151,6 +159,27 @@ class MockAdpRepository
           read: true,
         ),
       ];
+
+  @override
+  Future<void> markRead(String notificationId) async {}
+  @override
+  Future<void> markAllRead() async {}
+
+  // ── PrivacyRepository (RGPD) ──
+  @override
+  Future<void> recordConsent(
+          {required String purpose, required bool granted}) async {}
+  @override
+  Future<Map<String, dynamic>> exportData() async => {
+        'generatedAt': DateTime.now().toIso8601String(),
+        'user': {'firstName': _user.firstName, 'lastName': _user.lastName, 'email': _user.email},
+        'memberships': const [],
+        'donations': const [],
+        'consents': const [],
+        'notifications': const [],
+      };
+  @override
+  Future<void> requestErasure() async {}
 
   @override
   Future<CheckoutVerification> verifyCheckout(String checkoutIntentId) async =>

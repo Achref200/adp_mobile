@@ -141,6 +141,17 @@ class EPass {
   final DateTime validUntil;
 }
 
+/// Result of scanning/verifying an e-Pass QR payload server-side.
+class EPassVerification {
+  const EPassVerification(
+      {required this.valid,
+      required this.status,
+      required this.validUntil});
+  final bool valid;
+  final MembershipStatus status;
+  final DateTime? validUntil;
+}
+
 class CheckoutVerification {
   const CheckoutVerification({required this.confirmed, required this.status});
   final bool confirmed;

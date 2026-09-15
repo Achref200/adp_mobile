@@ -4,8 +4,8 @@ import { z } from 'zod';
 import { env } from '../config/env.js';
 import { requireAuth } from '../middleware/auth.js';
 import { ContentRepository } from '../repositories/content-repository.js';
-import { EngagementRepository } from '../repositories/engagement-repository.js';
 import { MemberRepository } from '../repositories/member-repository.js';
+import { EngagementRepository } from '../repositories/engagement-repository.js';
 import { PrivacyRepository } from '../repositories/privacy-repository.js';
 import { UserRepository } from '../repositories/user-repository.js';
 import { AppError } from '../types/api.js';
@@ -16,7 +16,9 @@ const connectionInput = z.object({ recipientId: z.string().uuid() });
 const deviceInput = z.object({ token: z.string().min(20).max(255), platform: z.enum(['android', 'ios']), preferences: z.record(z.string(), z.boolean()) });
 const consentInput = z.object({ purpose: z.enum(['directory_visibility', 'analytics', 'communications']), granted: z.boolean() });
 export async function apiRoutes(app: FastifyInstance): Promise<void> {
-  const content = new ContentRepository(); const users = new UserRepository(); const members = new MemberRepository(); const engagement = new EngagementRepository(); const privacy = new PrivacyRepository();
+  const content = new ContentRepository(); const users = new UserRepository(); const members = new MemberRepository();
+  // Registry of membership IDs already stored in a pass signature (per process).
+  const passIssuedFor = new Set<string>(); const engagement = new EngagementRepository(); const privacy = new PrivacyRepository();
   app.get('/me', { preHandler: requireAuth }, async (request) => { const user = await users.findById(request.userId); if (!user) throw new AppError(404, 'user_not_found', 'User not found.'); return user; });
   app.get('/projects', async () => content.projects());
   app.get('/news', async () => content.rows('news'));
@@ -52,12 +54,41 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
   }));
   app.get('/memberships/current', { preHandler: requireAuth }, async (request) => (await members.current(request.userId)) ?? { id: 'draft', status: 'draft', plan: 'none', expiresAt: null });
   app.post('/memberships', { preHandler: requireAuth }, async (request, reply) => { const body = membershipInput.parse(request.body); return reply.code(201).send(await members.submit(request.userId, body)); });
-  app.get('/me/e-pass', { preHandler: requireAuth }, async (request) => { const membership = await members.current(request.userId); if (!membership || membership.status !== 'active' || !membership.expiresAt) throw new AppError(404, 'epass_unavailable', 'An active membership is required.'); const claims = `${membership.id}.${request.userId}.${membership.expiresAt}`; const signature = createHmac('sha256', env.EPASS_SIGNING_SECRET).update(claims).digest('base64url'); return { memberId: membership.id, status: membership.status, validUntil: membership.expiresAt, qrPayload: `ADP1.${claims}.${signature}` }; });
+  app.get('/me/e-pass', { preHandler: requireAuth }, async (request) => {
+    const membership = await members.current(request.userId); // current() lazily expires overdue passes
+    if (!membership || membership.status !== 'active' || !membership.expiresAt) throw new AppError(404, 'epass_unavailable', 'An active membership is required.');
+    const claims = `${membership.id}.${request.userId}.${membership.expiresAt}`;
+    const signature = createHmac('sha256', env.EPASS_SIGNING_SECRET).update(claims).digest('base64url');
+    return { memberId: membership.id, status: membership.status, validUntil: membership.expiresAt, qrPayload: `ADP1.${claims}.${signature}` };
+  });
+  app.get('/e-pass/verify/:payload', { preHandler: requireAuth }, async (request) => {
+    const payload = (request.params as { payload: string }).payload;
+    const parts = payload.split('.');
+    if (parts.length !== 5 || parts[0] !== 'ADP1') throw new AppError(400, 'invalid_pass', 'This QR code is not a valid ADP pass.');
+    const membershipId = parts[1];
+    const userId = parts[2];
+    const expiresAt = parts[3];
+    const signature = parts[4];
+    const claims = `${membershipId}.${userId}.${expiresAt}`;
+    const expected = createHmac('sha256', env.EPASS_SIGNING_SECRET).update(claims).digest('base64url');
+    if (signature !== expected) throw new AppError(400, 'invalid_pass', 'Pass signature verification failed.');
+    const membership = await members.byId(membershipId);
+    if (!membership) throw new AppError(404, 'pass_unknown', 'This pass does not match any membership.');
+    const today = new Date().toISOString().slice(0, 10);
+    const expired = membership.expiresAt != null && membership.expiresAt < today;
+    return { valid: membership.status === 'active' && !expired, status: membership.status, validUntil: membership.expiresAt };
+  });
   app.get('/donations', { preHandler: requireAuth }, async (request) => engagement.donations(request.userId));
   app.get('/networking/profiles', { preHandler: requireAuth }, async (request) => engagement.directory(request.query as { country?: string; city?: string; sector?: string; skill?: string }));
   app.put('/networking/me', { preHandler: requireAuth }, async (request) => engagement.updateProfile(request.userId, profileInput.parse(request.body)));
   app.post('/networking/requests', { preHandler: requireAuth }, async (request, reply) => reply.code(201).send(await engagement.requestConnection(request.userId, connectionInput.parse(request.body).recipientId)));
   app.get('/notifications', { preHandler: requireAuth }, async (request) => engagement.notifications(request.userId));
+  app.post('/notifications/:id/read', { preHandler: requireAuth }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    await engagement.markNotificationRead(request.userId, id);
+    return reply.code(200).send({ ok: true });
+  });
+  app.post('/notifications/read-all', { preHandler: requireAuth }, async (request) => engagement.markAllNotificationsRead(request.userId));
   app.post('/devices', { preHandler: requireAuth }, async (request, reply) => reply.code(201).send(await engagement.registerDevice(request.userId, deviceInput.parse(request.body))));
   app.post('/privacy/consents', { preHandler: requireAuth }, async (request, reply) => reply.code(201).send(await privacy.recordConsent(request.userId, consentInput.parse(request.body))));
   app.get('/privacy/export', { preHandler: requireAuth }, async (request) => privacy.exportData(request.userId));

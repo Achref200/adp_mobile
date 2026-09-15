@@ -4,8 +4,17 @@ import type { MembershipStatus } from '../types/api.js';
 
 export type MembershipRecord = { id: string; plan: string; amountCents: number; status: MembershipStatus; expiresAt: string | null };
 export class MemberRepository {
+  /** Lazily expires any active membership whose validity date has passed. */
+  async expireIfDue(userId: string): Promise<void> {
+    await db.query("UPDATE memberships SET status = 'expired' WHERE user_id = $1 AND status = 'active' AND expires_at IS NOT NULL AND expires_at < CURRENT_DATE", [userId]);
+  }
   async current(userId: string): Promise<MembershipRecord | null> {
+    await this.expireIfDue(userId);
     const { rows } = await db.query<MembershipRecord>('SELECT id, plan, amount_cents AS "amountCents", status, expires_at AS "expiresAt" FROM memberships WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1', [userId]);
+    return rows[0] ?? null;
+  }
+  async byId(id: string): Promise<MembershipRecord | null> {
+    const { rows } = await db.query<MembershipRecord>('SELECT id, plan, amount_cents AS "amountCents", status, expires_at AS "expiresAt" FROM memberships WHERE id = $1', [id]);
     return rows[0] ?? null;
   }
   async submit(userId: string, input: { plan: string; amountCents: number; djerbaConnection: string; motivation?: string }): Promise<MembershipRecord> {

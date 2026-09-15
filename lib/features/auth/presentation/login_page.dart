@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,8 +15,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _form = GlobalKey<FormState>();
-  final _email = TextEditingController(text: 'slim.benamor@djerba.tn');
-  final _password = TextEditingController(text: 'Password123!');
+  final _email = TextEditingController();
+  final _password = TextEditingController();
   bool _obscure = true;
 
   @override
@@ -278,6 +279,43 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ],
 
+                                const SizedBox(height: 18),
+
+                                // ── Divider ──
+                                Row(
+                                  children: [
+                                    const Expanded(child: Divider(color: AdpColors.stroke)),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      child: Text(
+                                        'ou',
+                                        style: const TextStyle(fontSize: 12, color: AdpColors.muted, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                    const Expanded(child: Divider(color: AdpColors.stroke)),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+
+                                // ── Google Sign-In ──
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 48,
+                                  child: OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: AdpColors.surface,
+                                      foregroundColor: AdpColors.ink,
+                                      side: const BorderSide(color: AdpColors.stroke, width: 1),
+                                      shape: const StadiumBorder(),
+                                      elevation: 0,
+                                      textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                    ),
+                                    onPressed: state.status == AuthStatus.loading ? null : _googleSignIn,
+                                    icon: const Icon(Icons.g_mobiledata_rounded, size: 28, color: Color(0xFF4285F4)),
+                                    label: const Text('Continuer avec Google'),
+                                  ),
+                                ),
+
                                 const SizedBox(height: 20),
                                 Center(
                                   child: GestureDetector(
@@ -321,6 +359,38 @@ class _LoginPageState extends State<LoginPage> {
       context
           .read<AuthCubit>()
           .login(email: _email.text.trim(), password: _password.text);
+    }
+  }
+
+  Future<void> _googleSignIn() async {
+    try {
+      final google = GoogleSignIn.instance;
+      await google.initialize();
+      final account = await google.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        throw Exception('Google authentication returned no idToken.');
+      }
+      if (mounted) {
+        await context.read<AuthCubit>().googleSignIn(idToken: idToken);
+      }
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) return; // user closed the sheet
+      if (mounted) {
+        AdpFeedback.failure(
+          context,
+          source: 'Google',
+          message: 'Connexion Google impossible. Réessayez.',
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        AdpFeedback.failure(
+          context,
+          source: 'Google',
+          message: 'Connexion Google impossible. Vérifiez votre connexion et réessayez.',
+        );
+      }
     }
   }
 }

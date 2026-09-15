@@ -42,10 +42,23 @@ class AuthCubit extends Cubit<AuthState> {
           email: email,
           country: country,
           password: password));
+
+  /// Continues the Google flow: the platform idToken is exchanged for an ADP
+  /// session. Falls back to [register] when the Google account has no ADP
+  /// account yet, then redirects to the login screen for the first sign-in.
+  Future<void> googleSignIn({required String idToken}) =>
+      _run(() => _repository.googleSignIn(idToken: idToken));
+
   Future<void> _run(Future<AuthSession> Function() task) async {
     emit(const AuthState(status: AuthStatus.loading));
     try {
-      emit(AuthState(status: AuthStatus.authenticated, session: await task()));
+      final session = await task();
+      if (session.isNewRegistration) {
+        // Deliberate first login: the account exists, no session is opened.
+        emit(AuthState(status: AuthStatus.unauthenticated, message: 'Compte créé. Connectez-vous avec vos identifiants.'));
+        return;
+      }
+      emit(AuthState(status: AuthStatus.authenticated, session: session));
     } catch (error) {
       var message = 'Une erreur est survenue. Réessayez.';
       if (error is DioException &&

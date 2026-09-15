@@ -187,16 +187,10 @@ class _StoryProjectCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gradient Header
+          // Solid deep-ink header
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF0E2129), Color(0xFF173744)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            decoration: const BoxDecoration(color: AdpColors.ink),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

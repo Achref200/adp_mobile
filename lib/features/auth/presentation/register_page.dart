@@ -18,13 +18,14 @@ class _RegisterPageState extends State<RegisterPage> {
   final _last = TextEditingController();
   final _email = TextEditingController();
   final _country = TextEditingController(text: 'Tunisie');
-  final _connection = TextEditingController();
   final _password = TextEditingController();
   bool _obscure = true;
+  bool _submitted = false;
+  bool _acceptedTerms = false;
 
   @override
   void dispose() {
-    for (final c in [_first, _last, _email, _country, _connection, _password]) {
+    for (final c in [_first, _last, _email, _country, _password]) {
       c.dispose();
     }
     super.dispose();
@@ -34,13 +35,33 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state.status == AuthStatus.authenticated) {
-          context.go('/home');
-        } else if (state.status == AuthStatus.failure) {
+        if (state.status == AuthStatus.failure) {
           AdpFeedback.failure(
             context,
             source: 'Inscription',
             message: state.message ?? 'Vérifiez les informations saisies et réessayez.',
+          );
+        } else if (state.status == AuthStatus.unauthenticated && _submitted) {
+          _submitted = false;
+          showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => AlertDialog(
+              icon: const Icon(Icons.check_circle_outline_rounded, size: 44, color: AdpColors.success),
+              title: const Text('Compte créé !'),
+              content: const Text(
+                'Votre compte ADP est prêt. Connectez-vous avec votre email et votre mot de passe pour accéder à votre espace membre.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                    context.go('/auth/login');
+                  },
+                  child: const Text('Se connecter'),
+                ),
+              ],
+            ),
           );
         }
       },
@@ -167,15 +188,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 14),
 
-                    // Lien avec Djerba
-                    _buildFormField(
-                      label: 'Lien avec Djerba',
-                      controller: _connection,
-                      hint: 'Origine familiale, habitant, projet...',
-                      prefixIcon: Icons.location_on_outlined,
-                    ),
-                    const SizedBox(height: 14),
-
                     // Mot de passe
                     _buildFormField(
                       label: 'Mot de passe',
@@ -193,7 +205,53 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       validator: (v) => v == null || v.length < 12 ? '12 caractères minimum.' : null,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+
+                    // ── Terms & Privacy consent (required by App Store / Play Store) ──
+                    InkWell(
+                      onTap: () => setState(() => _acceptedTerms = !_acceptedTerms),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: Checkbox(
+                                value: _acceptedTerms,
+                                onChanged: (v) => setState(() => _acceptedTerms = v ?? false),
+                                activeColor: AdpColors.tealDeep,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text.rich(
+                                TextSpan(
+                                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF6B7280), height: 1.45),
+                                  children: [
+                                    const TextSpan(text: "J'accepte les "),
+                                    TextSpan(
+                                      text: 'Conditions Générales',
+                                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AdpColors.tealDeep, decoration: TextDecoration.underline),
+                                    ),
+                                    const TextSpan(text: " et la "),
+                                    TextSpan(
+                                      text: 'Politique de Confidentialité',
+                                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AdpColors.tealDeep, decoration: TextDecoration.underline),
+                                    ),
+                                    const TextSpan(text: " de l'association."),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
                     // Submit Button
                     SizedBox(
@@ -333,14 +391,23 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _submit() {
-    if (_form.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().register(
-        firstName: _first.text.trim(),
-        lastName: _last.text.trim(),
-        email: _email.text.trim(),
-        country: _country.text.trim(),
-        password: _password.text,
+    if (!(_form.currentState?.validate() ?? false)) return;
+    if (!_acceptedTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez accepter les Conditions Générales pour continuer.'),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
+      return;
     }
+    _submitted = true;
+    context.read<AuthCubit>().register(
+      firstName: _first.text.trim(),
+      lastName: _last.text.trim(),
+      email: _email.text.trim(),
+      country: _country.text.trim(),
+      password: _password.text,
+    );
   }
 }

@@ -10,7 +10,7 @@ import 'package:adp_mobile/core/storage/secure_session_store_stub.dart';
 /// Native platform storage backed by iOS Keychain and Android Keystore.
 ///
 /// Tokens never leave the device's secure enclave in plain text.
-class SecureSessionStore extends SecureSessionStoreStub {
+class SecureSessionStore extends SecureSessionStoreStubBase {
   final FlutterSecureStorage _storage;
 
   SecureSessionStore()
@@ -18,7 +18,7 @@ class SecureSessionStore extends SecureSessionStoreStub {
           aOptions: AndroidOptions(
             encryptedSharedPreferences: true,
           ),
-          iOptions: const IOSOptions(
+          iOptions: IOSOptions(
             accessibility: KeychainAccessibility.first_unlock_this_device,
           ),
         );

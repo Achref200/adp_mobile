@@ -17,23 +17,48 @@ class ApiAuthRepository implements AuthRepository {
           required String lastName,
           required String email,
           required String country,
-          required String password}) =>
-      _authenticate('/v1/auth/register', {
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'country': country,
-        'password': password
-      });
-  Future<AuthSession> _authenticate(
+          required String password}) async {
+    final json = await _exchange('/v1/auth/register', {
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'country': country,
+      'password': password
+    });
+    // Registration intentionally does NOT persist a session: the member
+    // returns to the login screen and signs in with their new credentials.
+    return _sessionFromJson(json, isNewRegistration: true);
+  }
+
+  @override
+  Future<AuthSession> googleSignIn({required String idToken}) async {
+    final json = await _exchange('/v1/auth/google', {'idToken': idToken});
+    final session = _sessionFromJson(json);
+    await _store.saveSession(
+        accessToken: session.accessToken, refreshToken: session.refreshToken);
+    return session;
+  }
+
+  Future<Map<String, dynamic>> _exchange(
       String path, Map<String, String> data) async {
     final response = await _api.post(path, data: data);
-    final json = response.data as Map<String, dynamic>;
+    return response.data as Map<String, dynamic>;
+  }
+
+  AuthSession _sessionFromJson(Map<String, dynamic> json,
+      {bool isNewRegistration = false}) {
     final user = _userFromJson(json['user'] as Map<String, dynamic>);
-    final session = AuthSession(
+    return AuthSession(
         user: user,
         accessToken: json['accessToken'] as String,
-        refreshToken: json['refreshToken'] as String);
+        refreshToken: json['refreshToken'] as String,
+        isNewRegistration: isNewRegistration);
+  }
+
+  Future<AuthSession> _authenticate(
+      String path, Map<String, String> data) async {
+    final json = await _exchange(path, data);
+    final session = _sessionFromJson(json);
     await _store.saveSession(
         accessToken: session.accessToken, refreshToken: session.refreshToken);
     return session;
@@ -87,12 +112,23 @@ class MockAuthRepository implements AuthRepository {
           required String lastName,
           required String email,
           required String country,
-          required String password}) =>
-      _session(
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          country: country);
+          required String password}) async {
+    // Mirrors the API contract: account created, then deliberate first login.
+    return AuthSession(
+        user: User(
+            id: 'usr_001',
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            country: country),
+        accessToken: 'mock-access-token',
+        refreshToken: 'mock-refresh-token',
+        isNewRegistration: true);
+  }
+
+  @override
+  Future<AuthSession> googleSignIn({required String idToken}) =>
+      _session(email: 'amel@example.org');
   Future<AuthSession> _session(
       {required String email,
       String firstName = 'Amel',

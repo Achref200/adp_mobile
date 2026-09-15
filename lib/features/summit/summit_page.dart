@@ -56,14 +56,10 @@ class _SummitPageState extends State<SummitPage> {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              gradient: const LinearGradient(
-                colors: [Color(0xFF0E2129), Color(0xFF1B3D4F)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: AdpColors.ink,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0E2129).withValues(alpha: 0.3),
+                  color: AdpColors.ink.withValues(alpha: 0.18),
                   blurRadius: 18,
                   offset: const Offset(0, 8),
                 ),

@@ -34,7 +34,7 @@ export class PrivacyRepository {
     const { rows } = await db.query(
       `INSERT INTO data_subject_requests (id, user_id, request_type, status)
        VALUES ($1, $2, 'erasure', 'requested')
-       RETURNING id, status, created_at AS "createdAt"`,
+       RETURNING id, status, requested_at AS "createdAt"`,
       [randomUUID(), userId],
     );
     return rows[0];
