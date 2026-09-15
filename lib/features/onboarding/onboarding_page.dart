@@ -73,27 +73,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     onTap: _prev,
                   ),
                   const SizedBox(width: 14),
-                  // Official ADP logo mark in top bar
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AdpColors.surface,
-                      border: Border.all(
-                        color: AdpColors.ink.withValues(alpha: 0.08),
-                        width: 1,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Image.asset(
-                        'assets/brand/logo_adp.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
                   // 4-segment step bar
                   Expanded(
                     child: Row(

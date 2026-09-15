@@ -5,13 +5,13 @@ class ApiClient {
   ApiClient({Dio? dio, String? baseUrl})
       : _dio = dio ??
             Dio(BaseOptions(
-              // On web, the API is deployed on the same origin (Vercel) —
-              // use relative paths. On mobile, use ADP_API_URL or localhost.
+              // On web, the API normally shares the app's origin (Vercel) —
+              // use relative paths. For local testing against a dev backend,
+              // run with --dart-define=ADP_API_URL=http://localhost:8080.
+              // On mobile, use ADP_API_URL or localhost.
               baseUrl: baseUrl ??
-                  (kIsWeb
-                      ? ''
-                      : const String.fromEnvironment('ADP_API_URL',
-                          defaultValue: 'http://localhost:8080')),
+                  const String.fromEnvironment('ADP_API_URL',
+                      defaultValue: kIsWeb ? '' : 'http://localhost:8080'),
               connectTimeout: const Duration(seconds: 12),
               receiveTimeout: const Duration(seconds: 12),
             ));

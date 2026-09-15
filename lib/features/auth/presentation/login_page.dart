@@ -69,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
+                      // Top-right action buttons
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -367,23 +368,40 @@ class _LoginPageState extends State<LoginPage> {
       final google = GoogleSignIn.instance;
       await google.initialize();
       final account = await google.authenticate();
-      final idToken = account.authentication.idToken;
+      final auth = account.authentication;
+      final idToken = auth.idToken;
       if (idToken == null || idToken.isEmpty) {
-        throw Exception('Google authentication returned no idToken.');
+        throw Exception(
+          'Google authentication returned no idToken. '
+          'Make sure google-services.json (Android) and/or '
+          'GoogleService-Info.plist (iOS) are configured.',
+        );
       }
       if (mounted) {
         await context.read<AuthCubit>().googleSignIn(idToken: idToken);
       }
     } on GoogleSignInException catch (e) {
-      if (e.code == GoogleSignInExceptionCode.canceled) return; // user closed the sheet
+      String message;
+      switch (e.code) {
+        case GoogleSignInExceptionCode.canceled:
+          return; // user closed the sheet
+        case GoogleSignInExceptionCode.providerConfigurationError:
+          message = 'Connexion Google impossible. Vérifiez votre connexion et réessayez.';
+          break;
+        case GoogleSignInExceptionCode.userMismatch:
+          message = 'Un autre compte Google est connecté. Déconnectez-le et réessayez.';
+          break;
+        default:
+          message = 'Connexion Google impossible. Réessayez.';
+      }
       if (mounted) {
         AdpFeedback.failure(
           context,
           source: 'Google',
-          message: 'Connexion Google impossible. Réessayez.',
+          message: message,
         );
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         AdpFeedback.failure(
           context,

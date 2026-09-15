@@ -5,8 +5,8 @@ const GOOGLE_JWKS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
 const GOOGLE_ISSUERS = ['https://accounts.google.com', 'accounts.google.com'];
 const CLOCK_TOLERANCE_SECONDS = 60;
 
-let cachedKey: { kid: string; key: string } | null = null;
-let cachedKeyFetchedAt = 0;
+let cachedKeys: Map<string, string> | null = null;
+let cachedKeysFetchedAt = 0;
 const KEY_CACHE_TTL_MS = 60 * 60 * 1000;
 
 async function fetchGoogleKeys(): Promise<Map<string, string>> {
@@ -17,20 +17,17 @@ async function fetchGoogleKeys(): Promise<Map<string, string>> {
   for (const k of keys) {
     map.set(k.kid, createPublicKey({ key: k as never, format: 'jwk' }).export({ type: 'spki', format: 'pem' }).toString());
   }
+  if (map.size === 0) throw new Error('Google JWKS is empty.');
   return map;
 }
 
 async function getGoogleKeys(): Promise<Map<string, string>> {
-  if (cachedKey && Date.now() - cachedKeyFetchedAt < KEY_CACHE_TTL_MS) {
-    // Cache holds one entry; refresh wholesale after TTL.
-    return new Map([[cachedKey.kid, cachedKey.key]]);
+  if (cachedKeys && Date.now() - cachedKeysFetchedAt < KEY_CACHE_TTL_MS) {
+    return cachedKeys;
   }
-  const keys = await fetchGoogleKeys();
-  const first = keys.entries().next();
-  if (first.done) throw new Error('Google JWKS is empty.');
-  cachedKey = { kid: first.value[0], key: first.value[1] };
-  cachedKeyFetchedAt = Date.now();
-  return keys;
+  cachedKeys = await fetchGoogleKeys();
+  cachedKeysFetchedAt = Date.now();
+  return cachedKeys;
 }
 
 export interface GoogleProfile {
