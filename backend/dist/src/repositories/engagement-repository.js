@@ -10,5 +10,7 @@ export class EngagementRepository {
     async requestConnection(requesterId, recipientId) { if (requesterId === recipientId)
         throw new Error('Cannot connect to self'); const { rows } = await db.query('INSERT INTO networking_requests (id, requester_id, recipient_id, status) VALUES ($1,$2,$3,\'pending\') ON CONFLICT (requester_id, recipient_id) DO UPDATE SET status = \'pending\' RETURNING id, status, created_at AS "createdAt"', [randomUUID(), requesterId, recipientId]); return rows[0]; }
     async notifications(userId) { const { rows } = await db.query('SELECT id, type, title, body, read_at AS "readAt", created_at AS "createdAt" FROM notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT 100', [userId]); return rows; }
+    async markNotificationRead(userId, notificationId) { await db.query('UPDATE notifications SET read_at = NOW() WHERE id = $1 AND user_id = $2 AND read_at IS NULL', [notificationId, userId]); }
+    async markAllNotificationsRead(userId) { await db.query('UPDATE notifications SET read_at = NOW() WHERE user_id = $1 AND read_at IS NULL', [userId]); }
     async registerDevice(userId, input) { await db.query('INSERT INTO device_tokens (id, user_id, token, platform, preferences) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (token) DO UPDATE SET user_id = EXCLUDED.user_id, platform = EXCLUDED.platform, preferences = EXCLUDED.preferences', [randomUUID(), userId, input.token, input.platform, JSON.stringify(input.preferences)]); return { registered: true }; }
 }

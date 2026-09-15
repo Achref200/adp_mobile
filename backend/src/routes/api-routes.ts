@@ -17,8 +17,7 @@ const deviceInput = z.object({ token: z.string().min(20).max(255), platform: z.e
 const consentInput = z.object({ purpose: z.enum(['directory_visibility', 'analytics', 'communications']), granted: z.boolean() });
 export async function apiRoutes(app: FastifyInstance): Promise<void> {
   const content = new ContentRepository(); const users = new UserRepository(); const members = new MemberRepository();
-  // Registry of membership IDs already stored in a pass signature (per process).
-  const passIssuedFor = new Set<string>(); const engagement = new EngagementRepository(); const privacy = new PrivacyRepository();
+  const engagement = new EngagementRepository(); const privacy = new PrivacyRepository();
   app.get('/me', { preHandler: requireAuth }, async (request) => { const user = await users.findById(request.userId); if (!user) throw new AppError(404, 'user_not_found', 'User not found.'); return user; });
   app.get('/projects', async () => content.projects());
   app.get('/news', async () => content.rows('news'));

@@ -1,4 +1,4 @@
-import { createPublicKey, randomUUID } from 'node:crypto';
+import { createPublicKey } from 'node:crypto';
 import jwt from 'jsonwebtoken';
 
 const GOOGLE_JWKS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
@@ -75,10 +75,4 @@ export async function verifyGoogleIdToken(idToken: string): Promise<GoogleProfil
     lastName: claims.family_name ?? '',
     locale: claims.locale,
   };
-}
-
-/** Deterministic synthetic credentials for Google-provisioned accounts (no local password). */
-export function googleSyntheticSecrets(sub: string) {
-  const random = randomUUID();
-  return { passwordHashSeed: `google:${sub}:${random}` };
 }

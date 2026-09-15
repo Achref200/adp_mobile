@@ -25,6 +25,7 @@ function createSqliteDb() {
       last_name TEXT NOT NULL,
       country TEXT NOT NULL,
       password_hash TEXT NOT NULL,
+      google_sub TEXT,
       directory_visible INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       deleted_at TEXT
@@ -142,6 +143,16 @@ function createSqliteDb() {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
+    CREATE TABLE IF NOT EXISTS data_subject_requests (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      request_type TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'requested',
+      requested_at TEXT NOT NULL DEFAULT (datetime('now')),
+      processed_at TEXT,
+      processing_note TEXT
+    );
+
     CREATE TABLE IF NOT EXISTS consents (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
@@ -149,7 +160,22 @@ function createSqliteDb() {
       granted INTEGER NOT NULL,
       recorded_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS data_subject_requests (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      request_type TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'requested',
+      requested_at TEXT NOT NULL DEFAULT (datetime('now')),
+      processed_at TEXT,
+      processing_note TEXT
+    );
   `);
+    // Existing SQLite files may predate the google_sub column.
+    try {
+        sqlite.exec("ALTER TABLE users ADD COLUMN google_sub TEXT");
+    }
+    catch { /* column already exists */ }
     // Seed default demo data if empty
     const projectCount = sqlite.prepare('SELECT count(*) as count FROM projects').get();
     if (projectCount.count === 0) {

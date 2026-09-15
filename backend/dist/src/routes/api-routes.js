@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { env } from '../config/env.js';
 import { requireAuth } from '../middleware/auth.js';
 import { ContentRepository } from '../repositories/content-repository.js';
-import { EngagementRepository } from '../repositories/engagement-repository.js';
 import { MemberRepository } from '../repositories/member-repository.js';
+import { EngagementRepository } from '../repositories/engagement-repository.js';
 import { PrivacyRepository } from '../repositories/privacy-repository.js';
 import { UserRepository } from '../repositories/user-repository.js';
 import { AppError } from '../types/api.js';
@@ -55,13 +55,45 @@ export async function apiRoutes(app) {
     }));
     app.get('/memberships/current', { preHandler: requireAuth }, async (request) => (await members.current(request.userId)) ?? { id: 'draft', status: 'draft', plan: 'none', expiresAt: null });
     app.post('/memberships', { preHandler: requireAuth }, async (request, reply) => { const body = membershipInput.parse(request.body); return reply.code(201).send(await members.submit(request.userId, body)); });
-    app.get('/me/e-pass', { preHandler: requireAuth }, async (request) => { const membership = await members.current(request.userId); if (!membership || membership.status !== 'active' || !membership.expiresAt)
-        throw new AppError(404, 'epass_unavailable', 'An active membership is required.'); const claims = `${membership.id}.${request.userId}.${membership.expiresAt}`; const signature = createHmac('sha256', env.EPASS_SIGNING_SECRET).update(claims).digest('base64url'); return { memberId: membership.id, status: membership.status, validUntil: membership.expiresAt, qrPayload: `ADP1.${claims}.${signature}` }; });
+    app.get('/me/e-pass', { preHandler: requireAuth }, async (request) => {
+        const membership = await members.current(request.userId); // current() lazily expires overdue passes
+        if (!membership || membership.status !== 'active' || !membership.expiresAt)
+            throw new AppError(404, 'epass_unavailable', 'An active membership is required.');
+        const claims = `${membership.id}.${request.userId}.${membership.expiresAt}`;
+        const signature = createHmac('sha256', env.EPASS_SIGNING_SECRET).update(claims).digest('base64url');
+        return { memberId: membership.id, status: membership.status, validUntil: membership.expiresAt, qrPayload: `ADP1.${claims}.${signature}` };
+    });
+    app.get('/e-pass/verify/:payload', { preHandler: requireAuth }, async (request) => {
+        const payload = request.params.payload;
+        const parts = payload.split('.');
+        if (parts.length !== 5 || parts[0] !== 'ADP1')
+            throw new AppError(400, 'invalid_pass', 'This QR code is not a valid ADP pass.');
+        const membershipId = parts[1];
+        const userId = parts[2];
+        const expiresAt = parts[3];
+        const signature = parts[4];
+        const claims = `${membershipId}.${userId}.${expiresAt}`;
+        const expected = createHmac('sha256', env.EPASS_SIGNING_SECRET).update(claims).digest('base64url');
+        if (signature !== expected)
+            throw new AppError(400, 'invalid_pass', 'Pass signature verification failed.');
+        const membership = await members.byId(membershipId);
+        if (!membership)
+            throw new AppError(404, 'pass_unknown', 'This pass does not match any membership.');
+        const today = new Date().toISOString().slice(0, 10);
+        const expired = membership.expiresAt != null && membership.expiresAt < today;
+        return { valid: membership.status === 'active' && !expired, status: membership.status, validUntil: membership.expiresAt };
+    });
     app.get('/donations', { preHandler: requireAuth }, async (request) => engagement.donations(request.userId));
     app.get('/networking/profiles', { preHandler: requireAuth }, async (request) => engagement.directory(request.query));
     app.put('/networking/me', { preHandler: requireAuth }, async (request) => engagement.updateProfile(request.userId, profileInput.parse(request.body)));
     app.post('/networking/requests', { preHandler: requireAuth }, async (request, reply) => reply.code(201).send(await engagement.requestConnection(request.userId, connectionInput.parse(request.body).recipientId)));
     app.get('/notifications', { preHandler: requireAuth }, async (request) => engagement.notifications(request.userId));
+    app.post('/notifications/:id/read', { preHandler: requireAuth }, async (request, reply) => {
+        const { id } = request.params;
+        await engagement.markNotificationRead(request.userId, id);
+        return reply.code(200).send({ ok: true });
+    });
+    app.post('/notifications/read-all', { preHandler: requireAuth }, async (request) => engagement.markAllNotificationsRead(request.userId));
     app.post('/devices', { preHandler: requireAuth }, async (request, reply) => reply.code(201).send(await engagement.registerDevice(request.userId, deviceInput.parse(request.body))));
     app.post('/privacy/consents', { preHandler: requireAuth }, async (request, reply) => reply.code(201).send(await privacy.recordConsent(request.userId, consentInput.parse(request.body))));
     app.get('/privacy/export', { preHandler: requireAuth }, async (request) => privacy.exportData(request.userId));
