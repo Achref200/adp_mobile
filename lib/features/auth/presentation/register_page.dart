@@ -237,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       text: 'Conditions Générales',
                                       style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AdpColors.tealDeep, decoration: TextDecoration.underline),
                                     ),
-                                    const TextSpan(text: " et la "),
+                                    const TextSpan(text: ' et la '),
                                     TextSpan(
                                       text: 'Politique de Confidentialité',
                                       style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AdpColors.tealDeep, decoration: TextDecoration.underline),

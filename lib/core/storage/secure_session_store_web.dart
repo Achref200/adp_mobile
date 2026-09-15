@@ -7,6 +7,7 @@
 // This file is loaded via conditional import from secure_session_store.dart,
 // so it must be fully self-contained (no inheritance from the stub).
 /////
+library;
 
 /// Contract for session token persistence (web in-memory implementation).
 class SecureSessionStore {

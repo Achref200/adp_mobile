@@ -3,6 +3,7 @@
 // Used by the analyzer's default context and unit tests; overridden by
 // the platform-specific implementations via conditional import.
 /////
+library;
 
 /// Base session token persistence: in-memory by default.
 /// Native builds override it with iOS Keychain / Android Keystore.

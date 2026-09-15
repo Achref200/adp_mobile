@@ -3,6 +3,7 @@
 // Loaded when dart.library.io is available (iOS / Android builds).
 // Uses flutter_secure_storage with platform-native secure enclaves.
 /////
+library;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:adp_mobile/core/storage/secure_session_store_stub.dart';

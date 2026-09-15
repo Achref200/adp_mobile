@@ -96,15 +96,15 @@ const List<_Section> _termsSections = [
     'Objet',
     "Les présentes conditions régissent l'utilisation de l'application mobile "
         "« ADP — Association Djerba Project » éditée par l'Association Djerba "
-        "Project, association à but non lucratif de droit tunisien dont le siège "
+        'Project, association à but non lucratif de droit tunisien dont le siège '
         "est situé à Djerba. En créant un compte ou en utilisant l'application, "
-        "vous acceptez ces conditions sans réserve.",
+        'vous acceptez ces conditions sans réserve.',
   ),
   (
     'Compte membre',
     "L'inscription est réservée aux personnes physiques majeures. Vous vous "
-        "engagez à fournir des informations exactes (identité, pays de "
-        "résidence) et à conserver vos identifiants confidentiels. Chaque membre "
+        'engagez à fournir des informations exactes (identité, pays de '
+        'résidence) et à conserver vos identifiants confidentiels. Chaque membre '
         "est responsable de l'activité réalisée depuis son compte. Vous pouvez "
         "supprimer votre compte à tout moment depuis l'écran « Mon Profil ».",
   ),
@@ -117,117 +117,117 @@ const List<_Section> _termsSections = [
   ),
   (
     'Dons',
-    "Les dons ponctuels ou mensuels sont collectés via notre prestataire de "
-        "paiement HelloAsso. Un reçu fiscal est délivré pour les dons ouvrant "
-        "droit à réduction. Le don est affecté aux projets citoyens présentés "
+    'Les dons ponctuels ou mensuels sont collectés via notre prestataire de '
+        'paiement HelloAsso. Un reçu fiscal est délivré pour les dons ouvrant '
+        'droit à réduction. Le don est affecté aux projets citoyens présentés '
         "dans l'application ; en cas d'impossibilité d'exécution, l'association "
         "peut réaffecter le don à un projet d'intérêt équivalent.",
   ),
   (
-    "e-Pass et évènements",
+    'e-Pass et évènements',
     "Le e-Pass est un titre d'accès numérique nominatif, personnel et "
-        "non transférable, dont la validité suit celle de votre adhésion. Toute "
-        "fraude ou tentative de reproduction expose à la suspension du compte "
+        'non transférable, dont la validité suit celle de votre adhésion. Toute '
+        'fraude ou tentative de reproduction expose à la suspension du compte '
         "et au refus d'accès aux évènements de l'association (dont le Sommet "
-        "Diaspora).",
+        'Diaspora).',
   ),
   (
     'Annuaire et bonnes pratiques',
     "L'annuaire des membres permet les mises en relation professionnelles au "
-        "sein de la communauté. Vous contrôlez votre visibilité à tout moment. "
-        "Sont interdits : démarchage commercial abusif, propos discriminatoires, "
+        'sein de la communauté. Vous contrôlez votre visibilité à tout moment. '
+        'Sont interdits : démarchage commercial abusif, propos discriminatoires, '
         "contenus illicites. L'association peut suspendre tout compte "
-        "contrevenant après notification.",
+        'contrevenant après notification.',
   ),
   (
     'Propriété intellectuelle',
-    "Les contenus (textes, projets, identité visuelle, logo) sont la propriété "
+    'Les contenus (textes, projets, identité visuelle, logo) sont la propriété '
         "de l'Association Djerba Project ou de leurs auteurs respectifs. Toute "
-        "reproduction sans autorisation écrite est interdite.",
+        'reproduction sans autorisation écrite est interdite.',
   ),
   (
     'Responsabilité',
     "L'association s'efforce d'assurer la disponibilité de l'application mais "
-        "ne saurait être tenue responsable des interruptions temporaires, ni des "
+        'ne saurait être tenue responsable des interruptions temporaires, ni des '
         "contenus publiés par les membres sur l'annuaire.",
   ),
   (
     'Évolution des conditions',
-    "Les présentes conditions peuvent être modifiées. Les membres seront "
+    'Les présentes conditions peuvent être modifiées. Les membres seront '
         "informés par notification dans l'application au moins 15 jours avant "
         "l'entrée en vigueur des nouvelles versions. La version applicable est "
         "celle consultable dans l'application.",
   ),
   (
     'Droit applicable',
-    "Les présentes conditions sont soumises au droit tunisien. En cas de "
-        "litige, et à défaut de résolution amiable, les tribunaux compétents "
-        "de Tunis seront saisies.",
+    'Les présentes conditions sont soumises au droit tunisien. En cas de '
+        'litige, et à défaut de résolution amiable, les tribunaux compétents '
+        'de Tunis seront saisies.',
   ),
 ];
 
 const List<_Section> _privacySections = [
   (
     'Données collectées',
-    "Dans le cadre de la gestion des membres et des dons, nous collectons : "
-        "identité (prénom, nom), adresse e-mail, pays de résidence, et si vous "
+    'Dans le cadre de la gestion des membres et des dons, nous collectons : '
+        'identité (prénom, nom), adresse e-mail, pays de résidence, et si vous '
         "activez l'annuaire : ville, secteur d'activité et compétences. Les "
-        "paiements sont traités par HelloAsso ; nous ne stockons aucune donnée "
-        "bancaire. Les journaux techniques (connexion, appareil) peuvent être "
-        "conservés à des fins de sécurité.",
+        'paiements sont traités par HelloAsso ; nous ne stockons aucune donnée '
+        'bancaire. Les journaux techniques (connexion, appareil) peuvent être '
+        'conservés à des fins de sécurité.',
   ),
   (
     'Finalités',
-    "Vos données servent exclusivement à : gérer votre adhésion et vos dons, "
+    'Vos données servent exclusivement à : gérer votre adhésion et vos dons, '
         "éditer vos reçus fiscaux, vous permettre d'accéder aux évènements "
         "(e-Pass), animer l'annuaire des membres si vous l'activez, et vous "
         "adresser les notifications que vous avez choisies. Aucune donnée n'est "
-        "vendue ni cédée à des tiers commerciaux.",
+        'vendue ni cédée à des tiers commerciaux.',
   ),
   (
     'Base légale et consentements',
     "Les traitements reposent sur l'exécution du contrat d'adhésion, notre "
         "intérêt légitime de sécurité et votre consentement pour l'annuaire, "
         "les communications et les statistiques d'usage. Chaque consentement "
-        "est enregistré horodaté et peut être retiré à tout moment depuis "
+        'est enregistré horodaté et peut être retiré à tout moment depuis '
         "l'application.",
   ),
   (
     'Durée de conservation',
-    "Les données de compte sont conservées pendant la durée de votre adhésion "
-        "puis archivées 3 ans après votre dernier contact. Les pièces "
-        "comptables (dons, cotisations) sont conservées 10 ans conformément aux "
-        "obligations légales tunisiennes.",
+    'Les données de compte sont conservées pendant la durée de votre adhésion '
+        'puis archivées 3 ans après votre dernier contact. Les pièces '
+        'comptables (dons, cotisations) sont conservées 10 ans conformément aux '
+        'obligations légales tunisiennes.',
   ),
   (
     'Vos droits (RGPD)',
-    "Conformément au RGPD et à la loi tunisienne 63-5 sur la protection des "
+    'Conformément au RGPD et à la loi tunisienne 63-5 sur la protection des '
         "données personnelles, vous disposez d'un droit d'accès, de "
         "rectification, d'effacement, de portabilité et d'opposition. "
         "L'export de vos données est disponible dans l'application (Mon Profil "
         "→ Exporter mes données). La demande d'effacement est traitée sous 30 "
-        "jours.",
+        'jours.',
   ),
   (
     'Sécurité',
-    "Les mots de passe sont chiffrés (bcrypt), les sessions reposent sur des "
+    'Les mots de passe sont chiffrés (bcrypt), les sessions reposent sur des '
         "jetons courts rotatifs stockés dans l'enclave sécurisée de votre "
-        "appareil (Keychain / Keystore). Les échanges sont chiffrés (HTTPS). "
+        'appareil (Keychain / Keystore). Les échanges sont chiffrés (HTTPS). '
         "L'accès à la base par le bureau de l'association est limité aux "
-        "fonctions nécessaires.",
+        'fonctions nécessaires.',
   ),
   (
     'Sous-traitants',
-    "Nous utilisons un nombre limité de prestataires : HelloAsso (paiement), "
-        "Google (authentification « Continuer avec Google », si vous "
+    'Nous utilisons un nombre limité de prestataires : HelloAsso (paiement), '
+        'Google (authentification « Continuer avec Google », si vous '
         "l'utilisez), et notre hébergeur applicatif dans l'Union européenne.",
   ),
   (
     'Contact',
-    "Pour exercer vos droits : contact@djerbaproject.fr ou par courrier à "
+    'Pour exercer vos droits : contact@djerbaproject.fr ou par courrier à '
         "l'Association Djerba Project, Djerba, Tunisie. Vous pouvez également "
         "saisir l'autorité de contrôle compétente (INPDP en Tunisie ou CNIL en "
-        "France).",
+        'France).',
   ),
 ];
 
@@ -235,25 +235,25 @@ const List<_Section> _deletionSections = [
   (
     'Supprimer mon compte',
     "Depuis l'application : onglet « Profil » → « Supprimer mon compte ». "
-        "Votre demande est enregistrée et traitée par le bureau sous 30 jours "
-        "au maximum. Vous recevez une confirmation par e-mail.",
+        'Votre demande est enregistrée et traitée par le bureau sous 30 jours '
+        'au maximum. Vous recevez une confirmation par e-mail.',
   ),
   (
     'Ce qui est supprimé',
-    "Profil (identité, e-mail, pays), profil annuaire (ville, secteur, "
-        "compétences), préférences de notifications, demandes de mise en "
+    'Profil (identité, e-mail, pays), profil annuaire (ville, secteur, '
+        'compétences), préférences de notifications, demandes de mise en '
         "relation, jetons d'appareil et historique de notifications.",
   ),
   (
     'Ce qui est conservé',
-    "Les éléments comptables liés aux dons et cotisations (obligation légale "
-        "de conservation de 10 ans) sont anonymisés : ils ne sont plus rattachés "
-        "à votre identité.",
+    'Les éléments comptables liés aux dons et cotisations (obligation légale '
+        'de conservation de 10 ans) sont anonymisés : ils ne sont plus rattachés '
+        'à votre identité.',
   ),
   (
     'Suppression par e-mail',
     "Vous pouvez aussi adresser votre demande depuis l'adresse associée à "
-        "votre compte : contact@djerbaproject.fr (délai de traitement : 30 "
-        "jours).",
+        'votre compte : contact@djerbaproject.fr (délai de traitement : 30 '
+        'jours).',
   ),
 ];

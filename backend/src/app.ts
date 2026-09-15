@@ -10,7 +10,9 @@ import { databaseHealth } from './config/database.js';
 import { AppError } from './types/api.js';
 
 export function buildApp() {
-  const app = Fastify({ logger: true });
+  // QR e-pass payloads (ADP1.<uuid>.<uuid>.<date>.<sig>) exceed the default
+  // 100-char param limit; raise it so /e-pass/verify/:payload accepts real passes.
+  const app = Fastify({ logger: true, maxParamLength: 500 });
   app.register(cors, { origin: env.APP_ORIGIN === '*' ? true : env.APP_ORIGIN });
   app.register(rawBody, { global: false, encoding: 'utf8', runFirst: true });
   app.get('/health', async (_request, reply) => {
