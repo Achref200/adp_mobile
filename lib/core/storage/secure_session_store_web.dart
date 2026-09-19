@@ -30,8 +30,10 @@ class SecureSessionStore {
     if (_loaded) return;
     _loaded = true;
     try {
-      _access = html.window.localStorage.getItem(accessKey);
-      _refresh = html.window.localStorage.getItem(refreshKey);
+      // dart:html Storage exposes Map-style operators, not the JS
+      // getItem/setItem/removeItem methods.
+      _access = html.window.localStorage[accessKey];
+      _refresh = html.window.localStorage[refreshKey];
     } catch (_) {
       // Storage disabled (e.g. private mode): fall back to memory-only.
     }
@@ -40,9 +42,9 @@ class SecureSessionStore {
   void _persist(String key, String? value) {
     try {
       if (value == null) {
-        html.window.localStorage.removeItem(key);
+        html.window.localStorage.remove(key);
       } else {
-        html.window.localStorage.setItem(key, value);
+        html.window.localStorage[key] = value;
       }
     } catch (_) {
       // Ignore quota/security errors — memory copy still holds the value.
