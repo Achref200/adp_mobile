@@ -3,6 +3,11 @@ import { z } from 'zod';
 // Fallback secrets for serverless/demo deployments where no env is configured.
 // For real production deployments, always set these explicitly in the environment.
 const DEV_FALLBACK_SECRET = 'adp-dev-only-fallback-secret-change-me-0001';
+if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET || !process.env.EPASS_SIGNING_SECRET) {
+    console.warn('[Env] JWT/EPASS secrets not provided — falling back to the PUBLIC dev fallback secret. ' +
+        'Any reader of the public repository could forge tokens. Set JWT_ACCESS_SECRET, ' +
+        'JWT_REFRESH_SECRET and EPASS_SIGNING_SECRET in the deployment environment.');
+}
 const envSchema = z.object({
     PORT: z.coerce.number().int().positive().default(8080),
     DATABASE_URL: z.string().url().default('postgres://localhost:5432/adp'),

@@ -339,6 +339,17 @@ export const db = {
             // Probe PostgreSQL
             const client = await pgPool.connect();
             client.release();
+            // Idempotent schema bootstrap + demo seed so a freshly provisioned
+            // database (e.g. Neon) is usable immediately — required on serverless
+            // where no manual migration step can run.
+            const { ensurePostgresSchema } = await import('./pg-bootstrap.js');
+            try {
+                await ensurePostgresSchema(pgPool);
+            }
+            catch (bootstrapError) {
+                console.error('[Database] PostgreSQL schema bootstrap failed:', bootstrapError);
+                throw bootstrapError;
+            }
             activeDb = pgPool;
             console.log('[Database] Connected to PostgreSQL successfully.');
             return activeDb.query(sql, params);
@@ -349,6 +360,12 @@ export const db = {
                 throw error;
             }
             console.warn('[Database] PostgreSQL unreachable. Using SQLite only because ALLOW_SQLITE_FALLBACK=true.');
+            if (process.env.VERCEL) {
+                console.warn('[Database] WARNING: running on the ephemeral /tmp SQLite inside Vercel. ' +
+                    'Registered users and refresh tokens are LOST on every cold start — accounts will ' +
+                    'fail to log in after instance recycling. Configure a persistent DATABASE_URL ' +
+                    '(e.g. Neon/Supabase/Vercel Postgres) for production.');
+            }
             activeDb = createSqliteDb();
             return activeDb.query(sql, params);
         }
