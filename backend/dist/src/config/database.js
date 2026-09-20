@@ -324,10 +324,13 @@ function createSqliteDb() {
         }
     };
 }
-// Initializer: prefers PostgreSQL if reachable, falls back seamlessly to SQLite
+// Initializer: prefers PostgreSQL if reachable, falls back seamlessly to SQLite.
+// connectionTimeoutMillis must comfortably exceed Neon's scale-from-zero cold
+// start (2-10s); a too-short probe silently pushes serverless instances onto
+// the ephemeral fallback database, which loses accounts on every cold start.
 const pgPool = new Pool({
     connectionString: env.DATABASE_URL,
-    connectionTimeoutMillis: 1500,
+    connectionTimeoutMillis: 10000,
     max: 5,
 });
 export const db = {
@@ -336,8 +339,21 @@ export const db = {
             return activeDb.query(sql, params);
         }
         try {
-            // Probe PostgreSQL
-            const client = await pgPool.connect();
+            // Probe PostgreSQL — retry once so a transient Neon cold-start timeout
+            // never pushes a serverless instance onto the ephemeral fallback.
+            let client;
+            for (let attempt = 1; attempt <= 2; attempt++) {
+                try {
+                    client = await pgPool.connect();
+                    break;
+                }
+                catch (probeError) {
+                    if (attempt === 2)
+                        throw probeError;
+                    console.warn(`[Database] PostgreSQL probe attempt ${attempt} failed, retrying...`, probeError instanceof Error ? probeError.message : probeError);
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                }
+            }
             client.release();
             // Idempotent schema bootstrap + demo seed so a freshly provisioned
             // database (e.g. Neon) is usable immediately — required on serverless

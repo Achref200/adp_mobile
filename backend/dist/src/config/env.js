@@ -11,7 +11,7 @@ if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET || !proces
 const envSchema = z.object({
     PORT: z.coerce.number().int().positive().default(8080),
     DATABASE_URL: z.string().url().default('postgres://localhost:5432/adp'),
-    ALLOW_SQLITE_FALLBACK: z.coerce.boolean().default(true),
+    ALLOW_SQLITE_FALLBACK: z.coerce.boolean().default(false),
     JWT_ACCESS_SECRET: z.string().min(32).default(DEV_FALLBACK_SECRET),
     JWT_REFRESH_SECRET: z.string().min(32).default(DEV_FALLBACK_SECRET + 'a'),
     EPASS_SIGNING_SECRET: z.string().min(32).default(DEV_FALLBACK_SECRET + 'b'),
