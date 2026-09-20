@@ -154,11 +154,11 @@ class _SplashPageState extends State<SplashPage>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'DJERBA PROJECT',
+                    'ADP',
                     style: GoogleFonts.barlowCondensed(
                       fontSize: 36,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
+                      letterSpacing: 3.0,
                       height: 1.0,
                       color: AdpColors.ink,
                     ),

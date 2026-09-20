@@ -61,19 +61,20 @@
       pointer-events: none;
     }
     #splash .logo {
-      width: 84px;
-      height: 84px;
-      border-radius: 50%;
-      background: #0E2129;
+      width: 96px;
+      height: 96px;
+      border-radius: 26px;
+      background: #FBF9F5;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 20px;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
     }
-    #splash .logo svg {
-      width: 56px;
-      height: 56px;
+    #splash .logo img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
     }
     #splash .app-name {
       font-family: 'Barlow Condensed', sans-serif;
@@ -100,18 +101,9 @@
   <!-- Loading splash screen (mirrors the Flutter splash) -->
   <div id="splash" aria-hidden="true">
     <div class="logo">
-      <svg viewBox="0 0 100 100" fill="none">
-        <circle cx="50" cy="50" r="40" fill="#F7EFE4" stroke="#EADBCE" stroke-width="2"/>
-        <circle cx="50" cy="50" r="36" stroke="#0E2129" stroke-width="1" opacity="0.3"/>
-        <path d="M 30 82 L 30 46 A 20 20 0 0 1 70 46 L 70 82 Z" fill="#0E2129"/>
-        <circle cx="50" cy="54" r="8" fill="#D5AB72"/>
-        <path d="M 30 64 L 70 64 L 70 82 L 30 82 Z" fill="#0D6274"/>
-        <circle cx="50" cy="38" r="3" fill="#D46238"/>
-        <rect x="38" y="30" width="4" height="16" fill="#0E2129"/>
-        <rect x="58" y="30" width="4" height="16" fill="#0E2129"/>
-      </svg>
+      <img src="assets/brand/logo_adp.png" alt="Logo ADP">
     </div>
-    <div class="app-name">DJERBA PROJECT</div>
+    <div class="app-name">ADP</div>
     <div class="tagline">Association Djerba Project</div>
   </div>
 

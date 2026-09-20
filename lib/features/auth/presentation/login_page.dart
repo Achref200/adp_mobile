@@ -366,7 +366,11 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _googleSignIn() async {
     try {
       final google = GoogleSignIn.instance;
-      await google.initialize();
+      // Web requires the OAuth Web client ID (baked at build time via
+      // --dart-define=GOOGLE_CLIENT_ID=... or the google-signin-client_id
+      // meta tag in web/index.html). Android/iOS use their own config files.
+      const clientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
+      await google.initialize(clientId: clientId.isEmpty ? null : clientId);
       final account = await google.authenticate();
       final auth = account.authentication;
       final idToken = auth.idToken;
@@ -386,7 +390,8 @@ class _LoginPageState extends State<LoginPage> {
         case GoogleSignInExceptionCode.canceled:
           return; // user closed the sheet
         case GoogleSignInExceptionCode.providerConfigurationError:
-          message = 'Connexion Google impossible. Vérifiez votre connexion et réessayez.';
+          message = 'Connexion Google non configurée. '
+              'Un client OAuth Google (ID client) doit être défini pour ce site.';
           break;
         case GoogleSignInExceptionCode.userMismatch:
           message = 'Un autre compte Google est connecté. Déconnectez-le et réessayez.';

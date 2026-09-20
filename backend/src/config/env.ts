@@ -28,6 +28,9 @@ const envSchema = z.object({
   HELLOASSO_WEBHOOK_SECRET: z.string().optional(),
   HELLOASSO_ORGANIZATION_SLUG: z.string().optional(),
   HELLOASSO_DONATION_FORM_URL: z.string().url().optional(),
+  // Google Sign-In: OAuth Web client ID used to validate the `aud` claim of
+  // incoming Google idTokens. Optional but strongly recommended in production.
+  GOOGLE_CLIENT_ID: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);

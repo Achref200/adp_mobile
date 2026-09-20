@@ -1,5 +1,6 @@
 import { createPublicKey } from 'node:crypto';
 import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
 
 const GOOGLE_JWKS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
 const GOOGLE_ISSUERS = ['https://accounts.google.com', 'accounts.google.com'];
@@ -53,6 +54,9 @@ export async function verifyGoogleIdToken(idToken: string): Promise<GoogleProfil
   const claims = jwt.verify(idToken, pem, {
     algorithms: ['RS256'],
     issuer: GOOGLE_ISSUERS as [string, ...string[]],
+    // When GOOGLE_CLIENT_ID is configured, reject tokens minted for any
+    // other OAuth client (prevents token-substitution across apps).
+    audience: env.GOOGLE_CLIENT_ID || undefined,
     clockTolerance: CLOCK_TOLERANCE_SECONDS,
   }) as {
     sub: string;
