@@ -1,6 +1,7 @@
 import { createPublicKey } from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
+import { AppError } from '../types/api.js';
 
 const GOOGLE_JWKS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
 const GOOGLE_ISSUERS = ['https://accounts.google.com', 'accounts.google.com'];
@@ -12,7 +13,7 @@ const KEY_CACHE_TTL_MS = 60 * 60 * 1000;
 
 async function fetchGoogleKeys(): Promise<Map<string, string>> {
   const response = await fetch(GOOGLE_JWKS_URL, { signal: AbortSignal.timeout(5000) });
-  if (!response.ok) throw new Error(`Google JWKS request failed: ${response.status}`);
+  if (!response.ok) throw new AppError(502, 'google_keys_unavailable', 'Google signing keys are temporarily unavailable. Please retry.');
   const { keys } = (await response.json()) as { keys: Array<{ kid: string; n: string; e: string }> };
   const map = new Map<string, string>();
   for (const k of keys) {
@@ -40,8 +41,20 @@ export interface GoogleProfile {
   locale?: string;
 }
 
-/** Verifies a Google-issued idToken and returns the verified profile. Throws when invalid. */
+/** Verifies a Google-issued idToken and returns the verified profile. Throws AppError(401) when invalid. */
 export async function verifyGoogleIdToken(idToken: string): Promise<GoogleProfile> {
+  try {
+    return await verifyGoogleIdTokenImpl(idToken);
+  } catch (error) {
+    // Client-visible errors (already AppError) pass through; anything else —
+    // malformed tokens, bad signatures, expired/audience-mismatched claims —
+    // is a client-authentication failure, never a server error.
+    if (error instanceof AppError) throw error;
+    throw new AppError(401, 'google_token_invalid', 'The Google sign-in could not be verified. Please try again.');
+  }
+}
+
+async function verifyGoogleIdTokenImpl(idToken: string): Promise<GoogleProfile> {
   const decodedHeader = jwt.decode(idToken, { complete: true });
   if (!decodedHeader || typeof decodedHeader === 'string') {
     throw new Error('Malformed Google idToken.');
