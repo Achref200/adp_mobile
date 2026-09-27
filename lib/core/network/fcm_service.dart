@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -47,15 +45,18 @@ class AdpFcmService {
       announcement: false,
     );
 
-    if (permission.granted) {
+    final granted = permission.authorizationStatus ==
+            AuthorizationStatus.authorized ||
+        permission.authorizationStatus == AuthorizationStatus.provisional;
+    if (granted) {
       // Foreground messages: show local notification so the user sees it
       // even when the app is open.
       _foregroundSubscription =
-          _messaging.onMessage.listen(_onForegroundMessage);
+          FirebaseMessaging.onMessage.listen(_onForegroundMessage);
     }
 
     // Background / terminated state: handle when user taps a notification.
-    FirebaseMessaging.instance.onMessageOpenedApp.listen(_onTapNotification);
+    FirebaseMessaging.onMessageOpenedApp.listen(_onTapNotification);
 
     // Get or refresh the FCM token.
     final token = await _messaging.getToken();
@@ -68,7 +69,8 @@ class AdpFcmService {
   /// Returns the current FCM token (may be null before initialization).
   Future<String?> get currentToken async => _messaging.getToken();
 
-  Future<void> _persistToken(String token) async {
+  Future<void> _persistToken(String? token) async {
+    if (token == null || token.isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('fcm_token', token);
   }

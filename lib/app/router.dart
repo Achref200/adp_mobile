@@ -18,6 +18,9 @@ import 'package:adp_mobile/features/profile/profile_page.dart';
 import 'package:adp_mobile/features/projects/projects_page.dart';
 import 'package:adp_mobile/features/splash/presentation/splash_page.dart';
 import 'package:adp_mobile/features/summit/summit_page.dart';
+import 'package:adp_mobile/features/auth/presentation/auth_cubit.dart';
+import 'package:adp_mobile/features/shared/domain/models.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(initialLocation: '/splash', routes: [

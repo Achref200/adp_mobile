@@ -243,11 +243,14 @@ class ApiAdpRepository
 
   // ── ContentRepository (admin / content-creator) ──
   @override
+  Future<List<Project>> listProjects() => list();
+
+  @override
   Future<List<News>> listDrafts({MemberRole? byRole}) async {
     final qs = byRole != null ? '?role=${byRole.name}' : '';
     return _publicList(
       cacheKey: 'drafts.news',
-      path: '/v1/content/news$dqs',
+      path: '/v1/content/news$qs',
       mapper: (json) => News(
         id: json['id'] as String,
         title: json['title'] as String,
@@ -265,7 +268,7 @@ class ApiAdpRepository
     final qs = byRole != null ? '?role=${byRole.name}' : '';
     return _publicList(
       cacheKey: 'drafts.events',
-      path: '/v1/content/events$dqs',
+      path: '/v1/content/events$qs',
       mapper: (json) => Event(
         id: json['id'] as String,
         title: json['title'] as String,
@@ -282,7 +285,7 @@ class ApiAdpRepository
   @override
   Future<List<ProjectDraft>> listProjectDrafts({MemberRole? byRole}) async {
     final qs = byRole != null ? '?role=${byRole.name}' : '';
-    final raw = (await _api.get('/v1/content/projects$dqs')).data as List<dynamic>;
+    final raw = (await _api.get('/v1/content/projects$qs')).data as List<dynamic>;
     return raw.map((json) => ProjectDraft(
       id: json['id'] as String,
       title: json['title'] as String,
@@ -300,7 +303,7 @@ class ApiAdpRepository
   @override
   Future<List<Newsletter>> listNewsletterDrafts({MemberRole? byRole}) async {
     final qs = byRole != null ? '?role=${byRole.name}' : '';
-    final raw = (await _api.get('/v1/content/newsletters$dqs')).data as List<dynamic>;
+    final raw = (await _api.get('/v1/content/newsletters$qs')).data as List<dynamic>;
     return raw.map((json) => Newsletter(
       id: json['id'] as String,
       title: json['title'] as String,

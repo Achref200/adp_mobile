@@ -4,7 +4,6 @@ import 'package:adp_mobile/core/widgets/adp_feedback.dart';
 import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/content_creator/presentation/content_cubit.dart';
 import 'package:adp_mobile/features/shared/domain/models.dart';
-import 'package:adp_mobile/features/shared/domain/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -223,7 +222,7 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AdpColors.tealDeep,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                 ),
               );
@@ -259,7 +258,7 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AdpColors.tealDeep,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                 ),
               );
@@ -297,7 +296,7 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AdpColors.tealDeep,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                 ),
               );
@@ -333,7 +332,7 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AdpColors.tealDeep,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                 ),
               );

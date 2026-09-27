@@ -162,6 +162,8 @@ class _MembershipPageState extends State<MembershipPage> {
                       ? AdpColors.tealDeep.withValues(alpha: 0.2)
                       : AdpColors.ink.withValues(alpha: 0.05),
               ),
+              ),
+
               child: Row(
                 children: [
                   const Icon(Icons.chat_bubble_outline_rounded,

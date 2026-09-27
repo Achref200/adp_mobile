@@ -231,7 +231,7 @@ class _SupportSection extends StatelessWidget {
               backgroundColor: AdpColors.tealDeep,
               shape:
                   RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
               duration: Duration(seconds: 4),
             ),
           );
@@ -385,13 +385,13 @@ class _SupportBottomSheetState extends State<_SupportBottomSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
+                    TextFormField(
                       controller: _subject,
                       decoration: const InputDecoration(
                         labelText: 'Sujet',
                         hintText: 'En quelques mots…',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
@@ -402,14 +402,14 @@ class _SupportBottomSheetState extends State<_SupportBottomSheet> {
                               : null,
                     ),
                     const SizedBox(height: 12),
-                    TextField(
+                    TextFormField(
                       controller: _message,
                       maxLines: 5,
                       decoration: const InputDecoration(
                         labelText: 'Message',
                         hintText: 'Décrivez votre demande, problème ou suggestion…',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
@@ -541,7 +541,7 @@ class _SupportBottomSheetState extends State<_SupportBottomSheet> {
           backgroundColor: AdpColors.terracotta,
           shape:
               RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.all(Radius.circular(12))),
         ),
       );
       return;

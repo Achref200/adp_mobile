@@ -15,6 +15,7 @@ import 'package:adp_mobile/features/networking/presentation/networking_cubit.dar
 import 'package:adp_mobile/features/epass/presentation/epass_cubit.dart';
 import 'package:adp_mobile/features/payments/presentation/payment_status_cubit.dart';
 import 'package:adp_mobile/features/profile/profile_cubit.dart';
+import 'package:adp_mobile/features/content_creator/presentation/content_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app_links/app_links.dart';
@@ -105,6 +106,10 @@ class _AdpAppState extends State<AdpApp> {
           BlocProvider(
               create: (_) =>
                   ProfileCubit(AppDependencies.privacyRepository())),
+          BlocProvider(
+              create: (context) => ContentCubit(
+                  AppDependencies.contentRepository(), context.read<AuthCubit>())
+                ..load()),
         ],
         child: MaterialApp.router(
           title: 'ADP — Association Djerba Project',
@@ -121,6 +126,7 @@ class _AdpAppState extends State<AdpApp> {
                   context.read<EPassCubit>().load();
                   context.read<InboxCubit>().load();
                   context.read<MembershipCubit>().load();
+                  context.read<ContentCubit>().load();
                   // Register FCM token with backend for push notifications.
                   _registerFcmToken(context);
                 }

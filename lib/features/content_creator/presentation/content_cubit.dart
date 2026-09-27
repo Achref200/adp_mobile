@@ -1,7 +1,7 @@
 import 'package:adp_mobile/core/state/async_state.dart';
 import 'package:adp_mobile/features/auth/presentation/auth_cubit.dart';
 import 'package:adp_mobile/features/shared/domain/models.dart';
-import 'package:adp_mobile/features/shared/data/api_repositories.dart';
+import 'package:adp_mobile/features/shared/domain/repositories.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContentState extends AsyncState<List<ContentDraftItem>> {
@@ -14,6 +14,21 @@ class ContentState extends AsyncState<List<ContentDraftItem>> {
   });
   final int selectedTab;
   final User? currentUser;
+
+  ContentState copyWith({
+    AsyncStatus? status,
+    List<ContentDraftItem>? data,
+    String? message,
+    int? selectedTab,
+    User? currentUser,
+  }) =>
+      ContentState(
+        status: status ?? this.status,
+        data: data ?? this.data,
+        message: message ?? this.message,
+        selectedTab: selectedTab ?? this.selectedTab,
+        currentUser: currentUser ?? this.currentUser,
+      );
 
   @override
   List<Object?> get props => [...super.props, selectedTab, currentUser];
@@ -41,15 +56,19 @@ class ContentDraftItem {
 enum ContentDraftType { news, event, project, newsletter }
 
 class ContentCubit extends Cubit<ContentState> {
-  ContentCubit(this._repository) : super(const ContentState());
-  final ApiAdpRepository _repository;
+  ContentCubit(this._repository, this._auth) : super(const ContentState());
+  final ContentRepository _repository;
+  final AuthCubit _auth;
+
+  /// Current signed-in member (null while the session is still restoring).
+  User? get _currentUser => _auth.state.session?.user;
 
   Future<void> load() async {
     emit(state.copyWith(status: AsyncStatus.loading));
     try {
-      final currentUser = context.read<AuthCubit>().state.session?.user;
+      final currentUser = _currentUser;
       final results = await Future.wait([
-        _repository.listNewsDrafts(),
+        _repository.listDrafts(),
         _repository.listEventDrafts(),
         _repository.listProjectDrafts(),
         _repository.listNewsletterDrafts(),
@@ -114,7 +133,7 @@ class ContentCubit extends Cubit<ContentState> {
 
   Future<void> submitNews({required String title, required String excerpt}) async {
     try {
-      final user = context.read<AuthCubit>().state.session?.user;
+      final user = _currentUser;
       await _repository.submitNewsDraft(News(
         id: 'draft',
         title: title,
@@ -140,7 +159,7 @@ class ContentCubit extends Cubit<ContentState> {
     required String description,
   }) async {
     try {
-      final user = context.read<AuthCubit>().state.session?.user;
+      final user = _currentUser;
       await _repository.submitEventDraft(Event(
         id: 'draft',
         title: title,
@@ -168,7 +187,7 @@ class ContentCubit extends Cubit<ContentState> {
     int? targetCents,
   }) async {
     try {
-      final user = context.read<AuthCubit>().state.session?.user;
+      final user = _currentUser;
       await _repository.submitProjectDraft(ProjectDraft(
         id: 'draft',
         title: title,
@@ -197,7 +216,7 @@ class ContentCubit extends Cubit<ContentState> {
     required String coverColor,
   }) async {
     try {
-      final user = context.read<AuthCubit>().state.session?.user;
+      final user = _currentUser;
       await _repository.submitNewsletterDraft(Newsletter(
         id: 'draft',
         title: title,
