@@ -1,6 +1,7 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
 import 'package:adp_mobile/core/widgets/app_states.dart';
+import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/events/presentation/events_cubit.dart';
 import 'package:adp_mobile/features/notifications/presentation/notification_cubit.dart';
 import 'package:adp_mobile/features/shared/domain/models.dart';
@@ -305,6 +306,7 @@ class _EventCard extends StatelessWidget {
                       elevation: 0,
                     ),
                     onPressed: () {
+                      AdpHaptic.success();
                       Navigator.pop(sheetContext);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

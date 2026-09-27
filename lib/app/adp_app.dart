@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:adp_mobile/app/router.dart';
+import 'package:adp_mobile/core/network/fcm_service.dart';
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/app/dependencies.dart';
 import 'package:adp_mobile/features/auth/presentation/auth_cubit.dart';
@@ -36,6 +37,17 @@ class _AdpAppState extends State<AdpApp> {
     _appLinks.getInitialLink().then((uri) {
       if (uri != null) _openLink(uri);
     });
+  }
+
+  Future<void> _registerFcmToken(BuildContext context) async {
+    try {
+      final token = await AdpFcmService().currentToken;
+      if (token != null && token.isNotEmpty) {
+        await AppDependencies.apiRepository().registerFcmToken(token);
+      }
+    } catch (_) {
+      // FCM registration is non-fatal.
+    }
   }
 
   void _openLink(Uri uri) {
@@ -109,6 +121,8 @@ class _AdpAppState extends State<AdpApp> {
                   context.read<EPassCubit>().load();
                   context.read<InboxCubit>().load();
                   context.read<MembershipCubit>().load();
+                  // Register FCM token with backend for push notifications.
+                  _registerFcmToken(context);
                 }
                 if (requiresAccount && authState.status != AuthStatus.authenticated) {
                   if (authState.status == AuthStatus.unauthenticated || authState.status == AuthStatus.failure) {

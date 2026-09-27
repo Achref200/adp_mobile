@@ -1,6 +1,7 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
 import 'package:adp_mobile/core/widgets/app_states.dart';
+import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/notifications/presentation/inbox_cubit.dart';
 import 'package:adp_mobile/features/notifications/presentation/notification_cubit.dart';
 import 'package:adp_mobile/features/shared/domain/models.dart';
@@ -260,8 +261,10 @@ class _Settings extends StatelessWidget {
           subtitle: Text(detail,
               style: const TextStyle(fontSize: 12, color: AdpColors.muted)),
           value: value,
-          onChanged: (enabled) =>
-              context.read<NotificationCubit>().update(next(enabled)),
+          onChanged: (enabled) {
+            AdpHaptic.select();
+            context.read<NotificationCubit>().update(next(enabled));
+          },
         ),
       );
 }

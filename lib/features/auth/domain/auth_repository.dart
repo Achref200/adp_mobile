@@ -22,7 +22,8 @@ abstract interface class AuthRepository {
       required String lastName,
       required String email,
       required String country,
-      required String password});
+      required String password,
+      String? referralCode});
 
   /// Exchanges a Google Identity Services idToken for an ADP session,
   /// provisioning the account on first sign-in.

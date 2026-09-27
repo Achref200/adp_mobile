@@ -1,4 +1,5 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
+import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/auth/presentation/auth_cubit.dart';
 import 'package:adp_mobile/features/shared/domain/models.dart' show MembershipStatus;
 import 'package:adp_mobile/features/membership/presentation/membership_cubit.dart';
@@ -152,12 +153,408 @@ class ProfilePage extends StatelessWidget {
           const _LegalSection(),
           const SizedBox(height: 12),
 
+          // ── Support & contact admins ──
+          const _SupportSection(),
+          const SizedBox(height: 12),
+
           // ── Session ──
           const _SessionCard(),
           const SizedBox(height: 32),
         ],
       ),
     );
+  }
+}
+
+// ─────────────────────────────────────────────
+// Support & contact admins
+// ─────────────────────────────────────────────
+class _SupportSection extends StatelessWidget {
+  const _SupportSection();
+
+  @override
+  Widget build(BuildContext context) => Column(
+        children: [
+          _Card(
+            onTap: () => _showSupportBottomSheet(context),
+            child: Row(
+              children: [
+                const _LeadingIcon(
+                  icon: Icons.help_outline_rounded,
+                  background: AdpColors.tealDeep,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                          'Support & Contact',
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                            color: AdpColors.ink,
+                          )),
+                      const SizedBox(height: 2),
+                      const Text(
+                          'Posez vos questions, signalez un souci ou envoyez un retour à l\u2019équipe ADP.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AdpColors.muted,
+                            height: 1.4,
+                          )),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_rounded,
+                    size: 16, color: AdpColors.muted),
+              ],
+            ),
+          ),
+        ],
+      );
+
+  void _showSupportBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _SupportBottomSheet(
+        onMessageSent: () {
+          Navigator.pop(sheetContext);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Votre message a bien été envoyé au bureau ADP.',
+              ),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: AdpColors.tealDeep,
+              shape:
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+              duration: Duration(seconds: 4),
+            ),
+          );
+          AdpHaptic.success();
+        },
+      ),
+    );
+  }
+}
+
+class _SupportBottomSheet extends StatefulWidget {
+  final VoidCallback onMessageSent;
+  const _SupportBottomSheet({required this.onMessageSent});
+
+  @override
+  State<_SupportBottomSheet> createState() => _SupportBottomSheetState();
+}
+
+class _SupportBottomSheetState extends State<_SupportBottomSheet> {
+  final _subject = TextEditingController();
+  final _message = TextEditingController();
+  String _selectedCategory = 'Question générale';
+  bool _sending = false;
+
+  static const _categories = [
+    'Question générale',
+    'Problème technique',
+    'Signalement',
+    'Demande de réclamation',
+    'Proposition d\u2019amélioration',
+    'Autre',
+  ];
+
+  @override
+  void dispose() {
+    _subject.dispose();
+    _message.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pop(context),
+      child: Container(
+        color: Colors.transparent,
+        child: Container(
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          constraints: const BoxConstraints(maxHeight: 520),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AdpColors.ink.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Title
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Contacter le bureau ADP',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: AdpColors.ink,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AdpColors.ink.withValues(alpha: 0.04),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 16,
+                        color: AdpColors.muted,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Category pills
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _categories.map((cat) {
+                    final selected = _selectedCategory == cat;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: ChoiceChip(
+                        label: Text(cat),
+                        selected: selected,
+                        onSelected: (sel) {
+                          AdpHaptic.select();
+                          setState(() => _selectedCategory = cat);
+                        },
+                        labelStyle: TextStyle(
+                          color: selected ? Colors.white : AdpColors.ink,
+                          fontWeight:
+                              selected ? FontWeight.w700 : FontWeight.w500,
+                          fontSize: 11.5,
+                        ),
+                        backgroundColor: Colors.white,
+                        selectedColor: AdpColors.tealDeep,
+                        showCheckmark: false,
+                        side: BorderSide(
+                          color: selected
+                              ? AdpColors.tealDeep
+                              : AdpColors.ink.withValues(alpha: 0.1),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Form
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _subject,
+                      decoration: const InputDecoration(
+                        labelText: 'Sujet',
+                        hintText: 'En quelques mots…',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                      ),
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty
+                              ? 'Un sujet est nécessaire'
+                              : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _message,
+                      maxLines: 5,
+                      decoration: const InputDecoration(
+                        labelText: 'Message',
+                        hintText: 'Décrivez votre demande, problème ou suggestion…',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                      ),
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty
+                              ? 'Le message est nécessaire'
+                              : null,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _sending ? null : _send,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AdpColors.tealDeep,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: _sending
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Envoyer au bureau ADP',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    // Info line
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          size: 13,
+                          color: AdpColors.muted,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'L\u2019équipeADP répond sous 48h. '
+                            'Pour les urgences : contact@djerbaproject.fr',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AdpColors.muted,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    // Quick contacts
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AdpColors.canvasSoft,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.email_rounded,
+                            size: 14,
+                            color: AdpColors.tealDeep,
+                          ),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Text(
+                              'contact@djerbaproject.fr',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: AdpColors.ink,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Icon(
+                            Icons.phone_android_rounded,
+                            size: 14,
+                            color: AdpColors.tealDeep,
+                          ),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Text(
+                              '+216 71 000 000',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: AdpColors.ink,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _send() {
+    if (_subject.text.trim().isEmpty || _message.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Veuillez remplir le sujet et le message.',
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AdpColors.terracotta,
+          shape:
+              RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+      return;
+    }
+    AdpHaptic.select();
+    setState(() => _sending = true);
+    // Simulate sending — in production this would call the backend.
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        setState(() => _sending = false);
+        widget.onMessageSent();
+      }
+    });
   }
 }
 
@@ -479,8 +876,8 @@ class _PrivacySection extends StatelessWidget {
             child: const Text('Annuler'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AdpColors.terracotta),
-            onPressed: () {
+            style: FilledButton.styleFrom(backgroundColor: AdpColors.terracotta),                onPressed: () {
+                  AdpHaptic.select();
               Navigator.of(dialogContext).pop();
               context.read<ProfileCubit>().requestErasure();
             },

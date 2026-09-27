@@ -1,4 +1,5 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
+import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -158,15 +159,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         textStyle: const TextStyle(
                             fontSize: 14.5, fontWeight: FontWeight.w700),
                       ),
-                      onPressed: _next,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(_buttonText),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.arrow_forward, size: 16),
-                        ],
-                      ),
+                  onPressed: () {
+                    AdpHaptic.tap();
+                    _next();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(_buttonText),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward, size: 16),
+                    ],
+                  ),
                     ),
                   ),
                   if (_step == 4) ...[
@@ -241,7 +245,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           icon: Icons.public_rounded,
           iconColor: AdpColors.ocean,
           isSelected: _connection == 'diaspora',
-          onTap: () => setState(() => _connection = 'diaspora'),
+          onTap: () {
+            AdpHaptic.select();
+            setState(() => _connection = 'diaspora');
+          },
         ),
         const SizedBox(height: 10),
         _ChoiceCard(
@@ -250,7 +257,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           icon: Icons.home_rounded,
           iconColor: AdpColors.terracotta,
           isSelected: _connection == 'resident',
-          onTap: () => setState(() => _connection = 'resident'),
+          onTap: () {
+            AdpHaptic.select();
+            setState(() => _connection = 'resident');
+          },
         ),
         const SizedBox(height: 10),
         _ChoiceCard(
@@ -259,7 +269,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           icon: Icons.favorite_rounded,
           iconColor: const Color(0xFF10B981),
           isSelected: _connection == 'friend',
-          onTap: () => setState(() => _connection = 'friend'),
+          onTap: () {
+            AdpHaptic.select();
+            setState(() => _connection = 'friend');
+          },
         ),
       ],
     );
@@ -302,6 +315,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             final isActive = _priorities.contains(cause);
             return GestureDetector(
               onTap: () {
+                AdpHaptic.select();
                 setState(() {
                   if (isActive) {
                     _priorities.remove(cause);
@@ -401,7 +415,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
         // Adhérent Actif
         _TierCard(
           isSelected: _path == 'member',
-          onTap: () => setState(() => _path = 'member'),
+          onTap: () {
+            AdpHaptic.select();
+            setState(() => _path = 'member');
+          },
           badgeText: 'OFFICIEL',
           badgeColor: AdpColors.ocean,
           badgeBgColor: AdpColors.oceanSoft,
@@ -414,7 +431,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
         // Sympathisant
         _TierCard(
           isSelected: _path == 'sympathisant',
-          onTap: () => setState(() => _path = 'sympathisant'),
+          onTap: () {
+            AdpHaptic.select();
+            setState(() => _path = 'sympathisant');
+          },
           badgeText: 'ACCÈS LIBRE',
           badgeColor: AdpColors.ink,
           badgeBgColor: AdpColors.ink.withValues(alpha: 0.06),

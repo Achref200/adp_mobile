@@ -1,5 +1,6 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
+import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/auth/presentation/auth_cubit.dart';
 import 'package:adp_mobile/features/donations/presentation/donation_cubit.dart';
 import 'package:adp_mobile/features/events/presentation/events_cubit.dart';
@@ -79,12 +80,88 @@ class HomePage extends StatelessWidget {
                     );
                   },
                 ),
+                const SizedBox(height: 18),
+
+                // ── Support & contact ──
+                _SupportCard(),
                 const SizedBox(height: 12),
               ],
             ),
           ),
         ),
       );
+}
+
+// ─────────────────────────────────────────────
+// Support card on home
+// ─────────────────────────────────────────────
+class _SupportCard extends StatelessWidget {
+  const _SupportCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        AdpHaptic.tap();
+        // Navigate to profile which has the support section
+        context.push('/profile');
+      },
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AdpColors.tealDeep.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AdpColors.tealDeep.withValues(alpha: 0.12)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AdpColors.tealDeep.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.help_outline_rounded,
+                color: AdpColors.tealDeep,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Besoin d\'aide ?',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AdpColors.ink,
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  const Text(
+                    'Contactez le bureau ou signalez un problème.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AdpColors.muted,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_rounded,
+              size: 14,
+              color: AdpColors.muted,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -312,7 +389,10 @@ class _ActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () {
+          AdpHaptic.tap();
+          onTap();
+        },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 4),
           decoration: BoxDecoration(

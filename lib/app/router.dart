@@ -1,4 +1,5 @@
 import 'package:adp_mobile/app/shell.dart';
+import 'package:adp_mobile/features/content_creator/presentation/content_creator_page.dart';
 import 'package:adp_mobile/features/epass/epass_page.dart';
 import 'package:adp_mobile/features/donations/presentation/donation_page.dart';
 import 'package:adp_mobile/features/events/presentation/events_page.dart';
@@ -54,6 +55,21 @@ final appRouter = GoRouter(initialLocation: '/splash', routes: [
   GoRoute(path: '/events', builder: (_, __) => const EventsPage()),
   GoRoute(
       path: '/notifications', builder: (_, __) => const NotificationsPage()),
+  GoRoute(
+      path: '/content',
+      builder: (_, __) => const ContentCreatorPage(),
+      redirect: (context, state) {
+        final auth = context.read<AuthCubit>();
+        if (auth.state.status != AuthStatus.authenticated) {
+          return '/auth/login';
+        }
+        final role = auth.state.session?.user.role;
+        if (role != MemberRole.admin && role != MemberRole.contentCreator) {
+          return '/home';
+        }
+        return null;
+      },
+    ),
   StatefulShellRoute.indexedStack(
     builder: (context, state, shell) => AppShell(shell: shell),
     branches: [

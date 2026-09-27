@@ -18,7 +18,11 @@ class ApiAdpRepository
         NotificationRepository,
         EPassRepository,
         PaymentStatusRepository,
-        PrivacyRepository {
+        PrivacyRepository,
+        ContentRepository {
+  // Content-creator / admin feature: wired to the same API client.
+  // Backend endpoints follow the same /v1/ convention as the rest of the app.
+  
   ApiAdpRepository(ApiClient api, SecureSessionStore store, [OfflineCache? cache])
       : _api = api,
         _authenticated = AuthenticatedApiClient(api, store),
@@ -40,6 +44,7 @@ class ApiAdpRepository
         'amountCents': input.amountCents,
         'djerbaConnection': input.djerbaConnection,
         if (input.motivation != null) 'motivation': input.motivation,
+        if (input.referralCode != null) 'referralCode': input.referralCode,
       }))
           .data as Map<String, dynamic>);
   @override
@@ -183,13 +188,24 @@ class ApiAdpRepository
     return CheckoutVerification(confirmed: json['verification'] == 'confirmed', status: status);
   }
 
+  /// Registers the device's FCM token with the backend for push notifications.
+  Future<void> registerFcmToken(String token) async {
+    await _authenticated.post('/v1/notifications/fcm-token', data: {'token': token});
+  }
+
+
   User _user(Map<String, dynamic> json) => User(
       id: json['id'] as String,
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
       email: json['email'] as String,
       country: json['country'] as String,
-      directoryVisible: json['directoryVisible'] as bool? ?? false);
+      directoryVisible: json['directoryVisible'] as bool? ?? false,
+      role: json['role'] != null
+          ? MemberRole.values.byName(json['role'] as String)
+          : MemberRole.member,
+      referralCode: json['referralCode'] as String?,
+      referredBy: json['referredBy'] as String?);
   Membership _membership(Map<String, dynamic> json) => Membership(
       id: json['id'] as String,
       plan: json['plan'] as String,
@@ -223,5 +239,302 @@ class ApiAdpRepository
       if (cached == null) rethrow;
       return cached.map((item) => mapper(Map<String, dynamic>.from(item as Map))).toList(growable: false);
     }
+  }
+
+  // ── ContentRepository (admin / content-creator) ──
+  @override
+  Future<List<News>> listDrafts({MemberRole? byRole}) async {
+    final qs = byRole != null ? '?role=${byRole.name}' : '';
+    return _publicList(
+      cacheKey: 'drafts.news',
+      path: '/v1/content/news$dqs',
+      mapper: (json) => News(
+        id: json['id'] as String,
+        title: json['title'] as String,
+        excerpt: json['excerpt'] as String,
+        publishedAt: DateTime.parse(json['publishedAt'] as String),
+        authorId: json['authorId'] as String?,
+        authorName: json['authorName'] as String?,
+        isPreview: json['status'] == 'draft' || json['status'] == 'pendingReview',
+      ),
+    );
+  }
+
+  @override
+  Future<List<Event>> listEventDrafts({MemberRole? byRole}) async {
+    final qs = byRole != null ? '?role=${byRole.name}' : '';
+    return _publicList(
+      cacheKey: 'drafts.events',
+      path: '/v1/content/events$dqs',
+      mapper: (json) => Event(
+        id: json['id'] as String,
+        title: json['title'] as String,
+        location: json['location'] as String? ?? 'Djerba',
+        startsAt: DateTime.parse(json['startsAt'] as String),
+        description: json['description'] as String? ?? '',
+        authorId: json['authorId'] as String?,
+        authorName: json['authorName'] as String?,
+        isPreview: json['status'] == 'draft' || json['status'] == 'pendingReview',
+      ),
+    );
+  }
+
+  @override
+  Future<List<ProjectDraft>> listProjectDrafts({MemberRole? byRole}) async {
+    final qs = byRole != null ? '?role=${byRole.name}' : '';
+    final raw = (await _api.get('/v1/content/projects$dqs')).data as List<dynamic>;
+    return raw.map((json) => ProjectDraft(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      category: json['category'] as String,
+      summary: json['summary'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      targetCents: json['targetCents'] as int?,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    )).toList(growable: false);
+  }
+
+  @override
+  Future<List<Newsletter>> listNewsletterDrafts({MemberRole? byRole}) async {
+    final qs = byRole != null ? '?role=${byRole.name}' : '';
+    final raw = (await _api.get('/v1/content/newsletters$dqs')).data as List<dynamic>;
+    return raw.map((json) => Newsletter(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      summary: json['summary'] as String,
+      content: json['content'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      publishedAt: json['publishedAt'] != null
+          ? DateTime.parse(json['publishedAt'] as String)
+          : null,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    )).toList(growable: false);
+  }
+
+  @override
+  Future<News> submitNewsDraft(News draft) async {
+    final json = (await _authenticated.post('/v1/content/news', data: {
+      'title': draft.title,
+      'excerpt': draft.excerpt,
+      'publishedAt': draft.publishedAt.toIso8601String(),
+      if (draft.authorId != null) 'authorId': draft.authorId,
+    })).data as Map<String, dynamic>;
+    return News(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      excerpt: json['excerpt'] as String,
+      publishedAt: DateTime.parse(json['publishedAt'] as String),
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+      isPreview: json['status'] == 'draft' || json['status'] == 'pendingReview',
+    );
+  }
+
+  @override
+  Future<Event> submitEventDraft(Event draft) async {
+    final json = (await _authenticated.post('/v1/content/events', data: {
+      'title': draft.title,
+      'location': draft.location,
+      'startsAt': draft.startsAt.toIso8601String(),
+      'description': draft.description,
+      if (draft.authorId != null) 'authorId': draft.authorId,
+    })).data as Map<String, dynamic>;
+    return Event(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      location: json['location'] as String? ?? 'Djerba',
+      startsAt: DateTime.parse(json['startsAt'] as String),
+      description: json['description'] as String? ?? '',
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+      isPreview: json['status'] == 'draft' || json['status'] == 'pendingReview',
+    );
+  }
+
+  @override
+  Future<ProjectDraft> submitProjectDraft(ProjectDraft draft) async {
+    final json = (await _authenticated.post('/v1/content/projects', data: {
+      'title': draft.title,
+      'category': draft.category,
+      'summary': draft.summary,
+      'coverColor': draft.coverColor,
+      if (draft.targetCents != null) 'targetCents': draft.targetCents,
+      if (draft.authorId != null) 'authorId': draft.authorId,
+    })).data as Map<String, dynamic>;
+    return ProjectDraft(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      category: json['category'] as String,
+      summary: json['summary'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      targetCents: json['targetCents'] as int?,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<Newsletter> submitNewsletterDraft(Newsletter draft) async {
+    final json = (await _authenticated.post('/v1/content/newsletters', data: {
+      'title': draft.title,
+      'summary': draft.summary,
+      'content': draft.content,
+      'coverColor': draft.coverColor,
+      if (draft.authorId != null) 'authorId': draft.authorId,
+    })).data as Map<String, dynamic>;
+    return Newsletter(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      summary: json['summary'] as String,
+      content: json['content'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      publishedAt: json['publishedAt'] != null
+          ? DateTime.parse(json['publishedAt'] as String)
+          : null,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<News> publishNews(String newsId) async {
+    final json = (await _authenticated.post('/v1/content/news/$newsId/publish')).data as Map<String, dynamic>;
+    return News(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      excerpt: json['excerpt'] as String,
+      publishedAt: DateTime.parse(json['publishedAt'] as String),
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<News> rejectNews(String newsId) async {
+    final json = (await _authenticated.post('/v1/content/news/$newsId/reject')).data as Map<String, dynamic>;
+    return News(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      excerpt: json['excerpt'] as String,
+      publishedAt: DateTime.parse(json['publishedAt'] as String),
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+      isPreview: true,
+    );
+  }
+
+  @override
+  Future<Event> publishEvent(String eventId) async {
+    final json = (await _authenticated.post('/v1/content/events/$eventId/publish')).data as Map<String, dynamic>;
+    return Event(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      location: json['location'] as String? ?? 'Djerba',
+      startsAt: DateTime.parse(json['startsAt'] as String),
+      description: json['description'] as String? ?? '',
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<Event> rejectEvent(String eventId) async {
+    final json = (await _authenticated.post('/v1/content/events/$eventId/reject')).data as Map<String, dynamic>;
+    return Event(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      location: json['location'] as String? ?? 'Djerba',
+      startsAt: DateTime.parse(json['startsAt'] as String),
+      description: json['description'] as String? ?? '',
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+      isPreview: true,
+    );
+  }
+
+  @override
+  Future<ProjectDraft> publishProject(String draftId) async {
+    final json = (await _authenticated.post('/v1/content/projects/$draftId/publish')).data as Map<String, dynamic>;
+    return ProjectDraft(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      category: json['category'] as String,
+      summary: json['summary'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      targetCents: json['targetCents'] as int?,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<ProjectDraft> rejectProject(String draftId) async {
+    final json = (await _authenticated.post('/v1/content/projects/$draftId/reject')).data as Map<String, dynamic>;
+    return ProjectDraft(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      category: json['category'] as String,
+      summary: json['summary'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      targetCents: json['targetCents'] as int?,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<Newsletter> publishNewsletter(String newsletterId) async {
+    final json = (await _authenticated.post('/v1/content/newsletters/$newsletterId/publish')).data as Map<String, dynamic>;
+    return Newsletter(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      summary: json['summary'] as String,
+      content: json['content'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      publishedAt: json['publishedAt'] != null
+          ? DateTime.parse(json['publishedAt'] as String)
+          : null,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<Newsletter> rejectNewsletter(String newsletterId) async {
+    final json = (await _authenticated.post('/v1/content/newsletters/$newsletterId/reject')).data as Map<String, dynamic>;
+    return Newsletter(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      summary: json['summary'] as String,
+      content: json['content'] as String,
+      coverColor: json['coverColor'] as String? ?? '#008891',
+      status: ContentStatus.values.byName(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      publishedAt: null,
+      authorId: json['authorId'] as String?,
+      authorName: json['authorName'] as String?,
+    );
+  }
+
+  @override
+  Future<List<User>> searchReferrers(String query) async {
+    final json = (await _authenticated.get('/v1/members/search?q=$query')).data as List<dynamic>;
+    return json.map((item) => _user(Map<String, dynamic>.from(item as Map))).toList(growable: false);
   }
 }

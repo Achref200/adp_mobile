@@ -3,69 +3,32 @@ import 'package:adp_mobile/core/storage/secure_session_store.dart';
 import 'package:adp_mobile/features/auth/data/auth_repository_impl.dart';
 import 'package:adp_mobile/features/auth/domain/auth_repository.dart';
 import 'package:adp_mobile/features/shared/data/api_repositories.dart';
-import 'package:adp_mobile/features/shared/data/mock_repositories.dart';
 import 'package:adp_mobile/features/shared/domain/repositories.dart';
 
+/// Dependency composition root.
+/// All data comes from the ADP backend (BaaS/API). There are no in-app mocks
+/// for data — the app is always bound to the real API.
 class AppDependencies {
   AppDependencies._();
-  static const useMock =
-      bool.fromEnvironment('ADP_USE_MOCK', defaultValue: false);
-  // Type comes from the conditional-import barrel: native SecureSessionStore on
-  // iOS/Android, in-memory SecureSessionStore on web.
   static final _store = SecureSessionStore();
-  static AuthRepository authRepository() => useMock
-      ? MockAuthRepository(_store)
-      : ApiAuthRepository(ApiClient(), _store);
-  static MockAdpRepository mockRepository() => MockAdpRepository();
+  static ApiClient _apiClient() => ApiClient();
+
+  static AuthRepository authRepository() =>
+      ApiAuthRepository(_apiClient(), _store);
   static ApiAdpRepository apiRepository() =>
-      ApiAdpRepository(ApiClient(), _store);
-  static ProjectRepository projectRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
+      ApiAdpRepository(_apiClient(), _store);
 
-  static NewsRepository newsRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
+  static ProjectRepository projectRepository() => apiRepository();
+  static NewsRepository newsRepository() => apiRepository();
+  static EventRepository eventRepository() => apiRepository();
+  static MembershipRepository membershipRepository() => apiRepository();
+  static DonationRepository donationRepository() => apiRepository();
+  static NetworkingRepository networkingRepository() => apiRepository();
+  static EPassRepository ePassRepository() => apiRepository();
+  static NotificationRepository notificationRepository() => apiRepository();
+  static PaymentStatusRepository paymentStatusRepository() => apiRepository();
+  static PrivacyRepository privacyRepository() => apiRepository();
 
-  static EventRepository eventRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
-
-  static MembershipRepository membershipRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
-
-  static DonationRepository donationRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
-
-  static NetworkingRepository networkingRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
-
-  static EPassRepository ePassRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
-
-  static NotificationRepository notificationRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
-
-  static PaymentStatusRepository paymentStatusRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
-
-  static PrivacyRepository privacyRepository() {
-    if (useMock) return mockRepository();
-    return apiRepository();
-  }
+  /// Content management for content-creators and admins.
+  static ContentRepository contentRepository() => apiRepository();
 }

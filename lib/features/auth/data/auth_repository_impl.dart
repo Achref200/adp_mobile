@@ -17,13 +17,15 @@ class ApiAuthRepository implements AuthRepository {
           required String lastName,
           required String email,
           required String country,
-          required String password}) async {
+          required String password,
+          String? referralCode}) async {
     final json = await _exchange('/v1/auth/register', {
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
       'country': country,
-      'password': password
+      'password': password,
+      if (referralCode != null && referralCode.isNotEmpty) 'referralCode': referralCode,
     });
     // Registration intentionally does NOT persist a session: the member
     // returns to the login screen and signs in with their new credentials.
@@ -96,7 +98,12 @@ class ApiAuthRepository implements AuthRepository {
       lastName: json['lastName'] as String,
       email: json['email'] as String,
       country: json['country'] as String,
-      directoryVisible: json['directoryVisible'] as bool? ?? false);
+      directoryVisible: json['directoryVisible'] as bool? ?? false,
+      role: json['role'] != null
+          ? MemberRole.values.byName(json['role'] as String)
+          : MemberRole.member,
+      referralCode: json['referralCode'] as String?,
+      referredBy: json['referredBy'] as String?);
 }
 
 class MockAuthRepository implements AuthRepository {
@@ -112,7 +119,8 @@ class MockAuthRepository implements AuthRepository {
           required String lastName,
           required String email,
           required String country,
-          required String password}) async {
+          required String password,
+          String? referralCode}) async {
     // Mirrors the API contract: account created, then deliberate first login.
     return AuthSession(
         user: User(
@@ -120,7 +128,11 @@ class MockAuthRepository implements AuthRepository {
             firstName: firstName,
             lastName: lastName,
             email: email,
-            country: country),
+            country: country,
+            referralCode: referralCode,
+            referredBy: referralCode != null
+                ? 'referral-assigned-by-admin'
+                : null),
         accessToken: 'mock-access-token',
         refreshToken: 'mock-refresh-token',
         isNewRegistration: true);

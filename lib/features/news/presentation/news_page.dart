@@ -1,6 +1,7 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
 import 'package:adp_mobile/core/widgets/app_states.dart';
+import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/news/presentation/news_cubit.dart';
 import 'package:adp_mobile/features/shared/domain/models.dart';
 import 'package:flutter/material.dart';
@@ -134,6 +135,7 @@ class _ArticleCard extends StatelessWidget {
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                     onPressed: () {
+                      AdpHaptic.tap();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Lien de l\'article partagé'),

@@ -1,5 +1,6 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/core/widgets/adp_feedback.dart';
+import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
 import 'package:adp_mobile/features/epass/presentation/epass_cubit.dart';
 import 'package:adp_mobile/features/membership/presentation/membership_cubit.dart';
@@ -20,12 +21,18 @@ class _MembershipPageState extends State<MembershipPage> {
   final _form = GlobalKey<FormState>();
   final _connection = TextEditingController();
   final _motivation = TextEditingController();
+  /// Lightweight referral: just a free-text name field (e.g. "Wissem").
+  /// Not prominent, not a code, not selecting a specific person — just info
+  /// for the admin to understand how the member heard about ADP.
+  final _referralName = TextEditingController();
+  bool _showReferralHelp = false;
   static const _plans = {'individual': 3000, 'family': 5000, 'diaspora': 4000, 'benefactor': 10000};
 
   @override
   void dispose() {
     _connection.dispose();
     _motivation.dispose();
+    _referralName.dispose();
     super.dispose();
   }
 
@@ -140,6 +147,94 @@ class _MembershipPageState extends State<MembershipPage> {
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AdpColors.ink.withValues(alpha: 0.08))),
             ),
           ),
+          const SizedBox(height: 14),
+          // ── Lightweight referral info (free text, non-prominent) ──
+          InkWell(
+            onTap: () => setState(() => _showReferralHelp = !_showReferralHelp),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: AdpColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: _referralName.text.trim().isNotEmpty
+                      ? AdpColors.tealDeep.withValues(alpha: 0.2)
+                      : AdpColors.ink.withValues(alpha: 0.05),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.chat_bubble_outline_rounded,
+                      size: 16, color: AdpColors.muted),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Qui vous a parlé de l\'ADP ? (optionnel)',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: AdpColors.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(_referralName.text.trim().isNotEmpty
+                      ? _referralName.text.trim()
+                      : 'Ajouter un nom…',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _referralName.text.trim().isNotEmpty
+                            ? AdpColors.tealDeep
+                            : AdpColors.mutedLight,
+                        fontWeight: FontWeight.w600,
+                      ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_showReferralHelp) ...[
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AdpColors.canvasSoft,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AdpColors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Ce champ est juste une information pour le bureau ADP. '
+                    'Il n\'y a pas de code ni de sélection de personne — '
+                    'vous pouvez simplement écrire un nom ou laisser vide.',
+                    style: TextStyle(fontSize: 11.5, color: AdpColors.muted, height: 1.4),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _referralName,
+                    decoration: InputDecoration(
+                      hintText: 'Ex: Wissem, Achref, la page Facebook ADP…',
+                      hintStyle: const TextStyle(color: AdpColors.mutedLight, fontSize: 13),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: AdpColors.ink.withValues(alpha: 0.08)),
+                      ),
+                      filled: true,
+                      fillColor: AdpColors.surface,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onSubmitted: (_) => setState(() => _showReferralHelp = false),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ]),
       );
 
@@ -222,6 +317,14 @@ class _MembershipPageState extends State<MembershipPage> {
               ListTile(title: const Text('Formule sélectionnée'), trailing: Text(_label(_plan), style: const TextStyle(fontWeight: FontWeight.w800))),
               Divider(height: 1, color: AdpColors.ink.withValues(alpha: 0.06)),
               ListTile(title: const Text('Montant de la cotisation'), trailing: Text('${(_plans[_plan]! / 100).toStringAsFixed(0)} €', style: const TextStyle(fontWeight: FontWeight.w800, color: AdpColors.ocean, fontSize: 16))),
+              if (_referralName.text.trim().isNotEmpty) ...[
+                Divider(height: 1, color: AdpColors.ink.withValues(alpha: 0.06)),
+                ListTile(
+                  title: const Text('Référence (info bureau)'),
+                  trailing: Text(_referralName.text.trim(), style: const TextStyle(fontWeight: FontWeight.w600, color: AdpColors.muted, fontSize: 13)),
+                  subtitle: const Text('Juste une indication pour le bureau ADP', style: TextStyle(fontSize: 10.5, color: AdpColors.mutedLight)),
+                ),
+              ],
               Divider(height: 1, color: AdpColors.ink.withValues(alpha: 0.06)),
               const ListTile(title: Text('Cycle d\'activation'), subtitle: Text('Paiement HelloAsso → Examen bureau → e-Pass actif')),
             ],
@@ -252,7 +355,13 @@ class _MembershipPageState extends State<MembershipPage> {
       context.read<MembershipCubit>().beginCheckout();
       return;
     }
-    context.read<MembershipCubit>().submit(MembershipSubmission(plan: _plan, amountCents: _plans[_plan]!, djerbaConnection: _connection.text.trim(), motivation: _motivation.text.trim().isEmpty ? null : _motivation.text.trim()));
+    context.read<MembershipCubit>().submit(MembershipSubmission(
+      plan: _plan,
+      amountCents: _plans[_plan]!,
+      djerbaConnection: _connection.text.trim(),
+      motivation: _motivation.text.trim().isEmpty ? null : _motivation.text.trim(),
+      referralCode: _referralName.text.trim().isEmpty ? null : _referralName.text.trim(),
+    ));
   }
 
   String _label(String plan) => switch (plan) {
