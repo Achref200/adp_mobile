@@ -1,5 +1,6 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
+import 'package:adp_mobile/core/widgets/adp_feedback.dart';
 import 'package:adp_mobile/core/widgets/app_states.dart';
 import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/news/presentation/news_cubit.dart';
@@ -136,14 +137,9 @@ class _ArticleCard extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     onPressed: () {
                       AdpHaptic.tap();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Lien de l\'article partagé'),
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: AdpColors.navy,
-                          duration: const Duration(seconds: 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
+                      AdpFeedback.info(
+                        context,
+                        message: 'Lien de l\'article partagé',
                       );
                     },
                   ),
@@ -173,13 +169,9 @@ class _ArticleDetail extends StatelessWidget {
             tooltip: 'Partager',
             icon: const Icon(Icons.share_outlined, size: 20),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Lien copié'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: AdpColors.navy,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
+              AdpFeedback.info(
+                context,
+                message: 'Lien copié',
               );
             },
           ),

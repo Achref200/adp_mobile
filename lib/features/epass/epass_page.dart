@@ -1,4 +1,5 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
+import 'package:adp_mobile/core/widgets/adp_feedback.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
 import 'package:adp_mobile/core/widgets/app_states.dart';
 import 'package:adp_mobile/features/epass/presentation/epass_cubit.dart';
@@ -47,13 +48,9 @@ class EPassPage extends StatelessWidget {
                   final pass = context.read<EPassCubit>().state.data;
                   if (pass == null) return;
                   Clipboard.setData(ClipboardData(text: pass.qrPayload));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Code du pass copié dans le presse-papiers'),
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: AdpColors.ink,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                    ),
+                  AdpFeedback.info(
+                    context,
+                    message: 'Code du pass copié dans le presse-papiers',
                   );
                 },
               ),
@@ -144,13 +141,9 @@ class EPassPage extends StatelessWidget {
                         ),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: pass.qrPayload));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Code du pass copié'),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: AdpColors.navy,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                            ),
+                          AdpFeedback.info(
+                            context,
+                            message: 'Code du pass copié',
                           );
                         },
                       ),
@@ -371,22 +364,20 @@ class _PassCard extends StatelessWidget {
 /// Asks the backend to re-validate the current pass (HMAC signature + live
 /// membership status) and shows the result in a dialog.
 Future<void> _verifyPass(BuildContext context) async {
-  final messenger = ScaffoldMessenger.of(context);
   final cubit = context.read<EPassCubit>();
-  messenger.showSnackBar(const SnackBar(
-    content: Text('Vérification en cours…'),
-    behavior: SnackBarBehavior.floating,
-    backgroundColor: AdpColors.ink,
-  ));
+  AdpFeedback.info(
+    context,
+    message: 'Vérification en cours…',
+  );
   final result = await cubit.verifyCurrentPass();
-  if (!messenger.mounted || !context.mounted) return;
-  messenger.clearSnackBars();
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).clearSnackBars();
   if (result == null) {
-    messenger.showSnackBar(const SnackBar(
-      content: Text('Impossible de vérifier le pass (connexion indisponible).'),
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: AdpColors.terracotta,
-    ));
+    AdpFeedback.failure(
+      context,
+      source: 'e-Pass',
+      message: 'Impossible de vérifier le pass (connexion indisponible).',
+    );
     return;
   }
   await showDialog<void>(

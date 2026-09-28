@@ -14,9 +14,11 @@ enum DonationFrequency { oneOff, monthly }
 enum MemberRole {
   /// Standard registered member — can donate, join, browse.
   member,
+
   /// Community content contributor — can draft news, events, projects, newsletters
   /// and submit them for admin validation before they go live.
   contentCreator,
+
   /// Trusted admin — can publish directly, manage referrals, validate content,
   /// and oversee membership requests.
   admin,
@@ -36,9 +38,11 @@ class User {
   final String id, firstName, lastName, email, country;
   final bool directoryVisible;
   final MemberRole role;
+
   /// Auto-generated unique referral code (e.g. 'ACHREF') shown to members who want
   /// to attribute their membership to a friend who introduced them to ADP.
   final String? referralCode;
+
   /// If this account was created through a referral, the id of the member who
   /// invited them — lets the admin trace the racine of every new member.
   final String? referredBy;
@@ -67,6 +71,7 @@ class MembershipSubmission {
   final int amountCents;
   final String djerbaConnection;
   final String? motivation;
+
   /// When a new member signs up, the name or referral code of the ADP member who
   /// introduced them (e.g. "Achref" heard about ADP from "Wissem").
   final String? referralCode;
@@ -97,13 +102,13 @@ class Project {
       required this.progress,
       required this.targetCents,
       required this.raisedCents,
-        required this.location,
-        this.donorsCount,
-        this.daysLeft});
+      required this.location,
+      this.donorsCount,
+      this.daysLeft});
   final String id, title, category, summary, location;
   final double progress;
   final int targetCents, raisedCents;
-      final int? donorsCount, daysLeft;
+  final int? donorsCount, daysLeft;
 
   int get target => targetCents ~/ 100;
   int get collected => raisedCents ~/ 100;
@@ -122,11 +127,13 @@ class News {
   final DateTime publishedAt;
   final String? authorId;
   final String? authorName;
+
   /// True while the content is still a draft awaiting admin validation.
   final bool isPreview;
 
   String get category => 'Éditorial';
-  String get dateFormatted => '${publishedAt.day.toString().padLeft(2, '0')}/${publishedAt.month.toString().padLeft(2, '0')}/${publishedAt.year}';
+  String get dateFormatted =>
+      '${publishedAt.day.toString().padLeft(2, '0')}/${publishedAt.month.toString().padLeft(2, '0')}/${publishedAt.year}';
 }
 
 class Event {
@@ -135,7 +142,8 @@ class Event {
       required this.title,
       required this.startsAt,
       required this.location,
-      this.description = 'Rencontre officielle et table ronde des membres de l\'Association Djerba Project.',
+      this.description =
+          'Rencontre officielle et table ronde des membres de l\'Association Djerba Project.',
       this.authorId,
       this.authorName,
       this.isPreview = false});
@@ -183,9 +191,7 @@ class EPass {
 /// Result of scanning/verifying an e-Pass QR payload server-side.
 class EPassVerification {
   const EPassVerification(
-      {required this.valid,
-      required this.status,
-      required this.validUntil});
+      {required this.valid, required this.status, required this.validUntil});
   final bool valid;
   final MembershipStatus status;
   final DateTime? validUntil;

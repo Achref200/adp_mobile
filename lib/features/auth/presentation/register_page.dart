@@ -393,11 +393,9 @@ class _RegisterPageState extends State<RegisterPage> {
   void _submit() {
     if (!(_form.currentState?.validate() ?? false)) return;
     if (!_acceptedTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Veuillez accepter les Conditions Générales pour continuer.'),
-          behavior: SnackBarBehavior.floating,
-        ),
+      AdpFeedback.info(
+        context,
+        message: 'Veuillez accepter les Conditions Générales pour continuer.',
       );
       return;
     }

@@ -82,6 +82,10 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
+                // ── Creator workspace (visible only to admins/creators) ──
+                const _CreatorCard(),
+                const SizedBox(height: 12),
+
                 // ── Support & contact ──
                 _SupportCard(),
                 const SizedBox(height: 12),
@@ -90,6 +94,86 @@ class HomePage extends StatelessWidget {
           ),
         ),
       );
+}
+
+// ─────────────────────────────────────────────
+// Creator workspace card — role behavior, not role decoration.
+// Admins and content creators get one obvious entry point to their
+// publishing work right where they start their day.
+// ─────────────────────────────────────────────
+class _CreatorCard extends StatelessWidget {
+  const _CreatorCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.select((AuthCubit cubit) => cubit.state.session?.user);
+    final role = user?.role;
+    final isCreator = role == MemberRole.admin || role == MemberRole.contentCreator;
+    if (!isCreator) return const SizedBox.shrink();
+
+    final isAdmin = role == MemberRole.admin;
+    return GestureDetector(
+      onTap: () {
+        AdpHaptic.tap();
+        context.push('/content');
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        decoration: BoxDecoration(
+          color: AdpColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AdpColors.tealDeep.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AdpColors.tealDeep.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isAdmin
+                    ? Icons.admin_panel_settings_rounded
+                    : Icons.edit_note_rounded,
+                size: 20,
+                color: AdpColors.tealDeep,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isAdmin ? 'Administration & Publications' : 'Mon Espace Créateur',
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w700,
+                      color: AdpColors.ink,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isAdmin
+                        ? 'Valider les contenus en attente et publier.'
+                        : 'Rédiger actualités, événements, projets et lettres.',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AdpColors.muted,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_rounded, size: 16, color: AdpColors.muted),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────

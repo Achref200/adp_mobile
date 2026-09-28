@@ -16,14 +16,15 @@ class AuthSession {
 }
 
 abstract interface class AuthRepository {
-  Future<AuthSession> login({required String email, required String password});
-  Future<AuthSession> register(
-      {required String firstName,
-      required String lastName,
-      required String email,
-      required String country,
-      required String password,
-      String? referralCode});
+  Future<AuthSession> login({required String email, required String password});  Future<AuthSession> register(
+          {required String firstName,
+          required String lastName,
+          required String email,
+          required String country,
+          required String password,
+          String? referralCode,
+          String? referredByMemberId});
+
 
   /// Exchanges a Google Identity Services idToken for an ADP session,
   /// provisioning the account on first sign-in.

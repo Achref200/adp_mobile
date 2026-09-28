@@ -214,17 +214,11 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   title: _titleField.text.trim(),
                   excerpt: _excerptField.text.trim(),
                 );
-            if (mounted) {
+            if (ctx.mounted) {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Actualité soumise pour validation.'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: AdpColors.tealDeep,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
-                ),
+              AdpFeedback.success(
+                context,
+                title: 'Actualité soumise pour validation.',
               );
             }
           }
@@ -250,17 +244,11 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   startsAt: DateTime.now().add(const Duration(days: 30)),
                   description: _descriptionField.text.trim(),
                 );
-            if (mounted) {
+            if (ctx.mounted) {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Événement soumis pour validation.'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: AdpColors.tealDeep,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
-                ),
+              AdpFeedback.success(
+                context,
+                title: 'Événement soumis pour validation.',
               );
             }
           }
@@ -288,17 +276,11 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   targetCents: int.tryParse(_projectTargetField.text) ??
                       5000000,
                 );
-            if (mounted) {
+            if (ctx.mounted) {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Projet soumis pour validation.'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: AdpColors.tealDeep,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
-                ),
+              AdpFeedback.success(
+                context,
+                title: 'Projet soumis pour validation.',
               );
             }
           }
@@ -324,17 +306,11 @@ class _ContentCreatorPageState extends State<ContentCreatorPage>
                   content: _newsletterContentField.text.trim(),
                   coverColor: '#008891',
                 );
-            if (mounted) {
+            if (ctx.mounted) {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Lettre d\'information soumise.'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: AdpColors.tealDeep,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
-                ),
+              AdpFeedback.success(
+                context,
+                title: 'Lettre d\'information soumise.',
               );
             }
           }
@@ -582,139 +558,6 @@ class _DraftTile extends StatelessWidget {
 }
 
 // ── Editor forms ──
-
-class _BaseEditorForm extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  final VoidCallback onSubmit;
-
-  const _BaseEditorForm({
-    required this.formKey,
-    required this.onSubmit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.pop(context),
-      child: Container(
-        color: Colors.transparent,
-        child: Container(
-          margin: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            top: 16,
-            left: 16,
-            right: 16,
-          ),
-          constraints: const BoxConstraints(maxHeight: 400),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Nouveau contenu',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: AdpColors.ink,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: AdpColors.ink.withValues(alpha: 0.06),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.close, size: 16),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                ],
-              ),
-              const Divider(color: AdpColors.border, height: 1),
-              // Form body
-              Flexible(
-                child: Form(
-                  key: formKey,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText: 'Titre',
-                            hintText: 'Titre du contenu...',
-                          ),
-                          validator: (v) =>
-                              v == null || v.trim().isEmpty
-                                  ? 'Le titre est requis'
-                                  : null,
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                            hintText: 'Description courte...',
-                          ),
-                          maxLines: 3,
-                          validator: (v) =>
-                              v == null || v.trim().isEmpty
-                                  ? 'La description est requise'
-                                  : null,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: onSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AdpColors.tealDeep,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Publier',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _NewsEditorForm extends StatelessWidget {
   final TextEditingController titleController;

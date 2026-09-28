@@ -1,6 +1,7 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
 import 'package:adp_mobile/core/state/async_state.dart';
 import 'package:adp_mobile/core/widgets/app_states.dart';
+import 'package:adp_mobile/core/widgets/adp_feedback.dart';
 import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/events/presentation/events_cubit.dart';
 import 'package:adp_mobile/features/notifications/presentation/notification_cubit.dart';
@@ -101,13 +102,9 @@ class EventsPage extends StatelessWidget {
   void _notify(BuildContext context) {
     final preferences = context.read<NotificationCubit>();
     preferences.update(preferences.state.copyWith(events: true));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Rappels du Sommet activés sur cet appareil.'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AdpColors.navy,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+    AdpFeedback.success(
+      context,
+      title: 'Rappels du Sommet activés sur cet appareil.',
     );
   }
 }
@@ -308,13 +305,9 @@ class _EventCard extends StatelessWidget {
                     onPressed: () {
                       AdpHaptic.success();
                       Navigator.pop(sheetContext);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Ajouté à votre agenda'),
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: const Color(0xFF10B981),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
+                      AdpFeedback.success(
+                        context,
+                        title: 'Ajouté à votre agenda',
                       );
                     },
                     child: const Text('Ajouter à mon agenda', style: TextStyle(fontWeight: FontWeight.w800)),

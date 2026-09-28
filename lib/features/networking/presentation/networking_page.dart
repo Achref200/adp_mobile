@@ -19,7 +19,7 @@ class NetworkingPage extends StatelessWidget {
             if (state.message != null) {
               AdpFeedback.failure(context, source: 'Réseau', message: text);
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+              AdpFeedback.info(context, message: text);
             }
           }
         },
@@ -270,13 +270,9 @@ class _DirectoryState extends State<_Directory> {
                           : () {
                               setState(() => _sentRequests.add(member.id));
                               context.read<NetworkingCubit>().requestConnection(member.id);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Demande de mise en relation transmise à ${member.name}.'),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: AdpColors.ink,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                ),
+                              AdpFeedback.success(
+                                context,
+                                title: 'Demande de mise en relation transmise à ${member.name}.',
                               );
                             },
                     ),

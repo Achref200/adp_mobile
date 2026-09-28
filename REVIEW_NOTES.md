@@ -10,36 +10,46 @@
 - Referral plumbing exists: `MembershipSubmission.referralCode`, member `referredBy`, `MemberRole.contentCreator` and `MemberRole.admin`, `ContentRepository` draft/publish API surface, `ContentCreatorPage`.
 - UX helpers exist: `AdpFeedback.failure(...)`, `AdpHaptic`, `AdpTheme` with M3, branded typography (Barlow Condensed + Manrope).
 
+## Done in this pass (September 28, 2026)
+
+1. **Referral is now a real member root, not a typed guess.**
+   - Membership step 1 offers a quiet chip: "Qui vous a parlé de l'ADP ?".
+   - Opening it searches real members via `MembershipRepository.searchReferrers` (`/v1/members/search`).
+   - The user picks a person; the chip shows their name + referral code, the summary shows "Parrain (info bureau)".
+   - `MembershipSubmission.referralCode` now carries the picked member's code (free text only as last-resort fallback).
+   - `AuthRepository.register` accepts `referredByMemberId` so the API can store the true racine.
+   - New reusable widget: `lib/features/membership/presentation/adp_referral_chip.dart`.
+
+2. **One feedback voice — `AdpFeedback` success / failure / info.**
+   - Every toast now flows through `core/widgets/adp_feedback.dart`.
+   - Migrated: content creator (4 submit confirmations), profile (support sheet, directory toggle, RGPD export/erasure), news share, summit register/poll, events reminders/agenda, e-Pass copy/verify, networking connection requests, register terms gate, membership notices.
+   - Haptics stay paired with meaningful moments only (submit, select, success).
+
+3. **Roles behave, not just display.**
+   - Home shows a creator/admin workspace card only for those roles ("Mon Espace Créateur" / "Administration & Publications").
+   - Profile badge reflects the real role (ADMINISTRATEUR / CRÉATEUR DE CONTENU / MEMBRE ADP).
+   - `/content` route guard was already correct; now the rest of the app matches it.
+
+4. **Hygiene.**
+   - Dead `_BaseEditorForm` removed; unused import cleaned.
+   - `registerFcmToken` override annotation fixed.
+   - `dart analyze lib/` is clean: 0 errors, 0 warnings.
+
 ## What the tester approved
 
 - Mobile + web parity is good enough for demos/admins.
 - Sharing a web link is easier than shipping APKs.
 - Current membership, profile, support, onboarding, and content-creator flows are acceptable as a baseline.
 
-## Biggest problems seen in git + code
+## Remaining, in priority order
 
-1. **Referral is still a free-text guess, not a membership root.**
-   - `membership_page.dart` sends `referralCode` but the UI only asks for a name/word.
-   - `MembershipRepository.searchReferrers(...)` exists in the contract, but the screen does not use it to let people choose a real referrer.
-   - Result: the admin still gets ambiguous strings instead of a traceable member `referredBy` chain.
+1. **Admin publish/reject surface** — `ContentRepository.publishNews/rejectNews/...` exists in the API layer; the content page still needs the admin's accept/reject actions on pending drafts (the cubit methods are the natural home).
 
-2. **Roles exist in the model, not in the product behavior.**
-   - `MemberRole.contentCreator` and `MemberRole.admin` are defined.
-   - `ContentCreatorPage` gates creation behind role checks, but everything important is still submitted as drafts and there is no real “publish without me” path usable by trusted creators inside the app.
-   - Admin-only actions like `publishNews/rejectNews/...` are declared in `ContentRepository` but not exposed as usable admin UI yet.
+2. **Notification routing** — foreground FCM messages show a local notification, but tapping should deep-link (route payload is parsed but unused in `fcm_service.dart`).
 
-3. **Feedback and motion are uneven.**
-   - `AdpFeedback` only has failure snackbars.
-   - Many screens still use ad hoc `ScaffoldMessenger.of(context).showSnackBar(...)`, including different durations, colors, rounded shapes, and copy styles.
-   - `AdpHaptic` exists, but:
-     - web explicitly short-circuits haptics;
-     - success/selection haptics are inconsistent across forms;
-     - submit confirmation, payment launch, and draft submission do not feel like one connected interaction.
-   - Bottom sheets, dialogs, and list interactions do not share one motion language.
+3. **Bottom-sheet motion language** — editor sheets are functional but open with default animation; one shared soft entrance would unify them.
 
-4. **Loading and empty states are manual, not systematic.**
-   - `AsyncState` exists, but a lot of UI still writes its own “loading spinner / empty message / error snackbar” patterns instead of reusing one presentation layer.
-   - That makes skeleton states, disabled interactions, and retry behavior depend on the author of each screen.
+4. **Content page state views** — the creator draft lists could adopt `AdpStateView` for skeleton/empty like news/events do.
 
 5. **Notifications are set up, but not fully integrated into the browsing experience.**
    - FCM + local notifications are initialized.

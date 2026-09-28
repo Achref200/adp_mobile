@@ -188,7 +188,7 @@ class ApiAdpRepository
     return CheckoutVerification(confirmed: json['verification'] == 'confirmed', status: status);
   }
 
-  /// Registers the device's FCM token with the backend for push notifications.
+  @override
   Future<void> registerFcmToken(String token) async {
     await _authenticated.post('/v1/notifications/fcm-token', data: {'token': token});
   }

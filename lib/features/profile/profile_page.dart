@@ -1,7 +1,8 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
+import 'package:adp_mobile/core/widgets/adp_feedback.dart';
 import 'package:adp_mobile/core/widgets/adp_haptic.dart';
 import 'package:adp_mobile/features/auth/presentation/auth_cubit.dart';
-import 'package:adp_mobile/features/shared/domain/models.dart' show MembershipStatus;
+import 'package:adp_mobile/features/shared/domain/models.dart' show MemberRole, MembershipStatus;
 import 'package:adp_mobile/features/membership/presentation/membership_cubit.dart';
 import 'package:adp_mobile/features/networking/presentation/networking_cubit.dart';
 import 'package:adp_mobile/features/notifications/presentation/inbox_cubit.dart';
@@ -22,6 +23,11 @@ class ProfilePage extends StatelessWidget {
         user?.fullName.isNotEmpty == true ? user!.fullName : 'Votre profil';
     final email = user?.email ?? 'Compte non connecté';
     final country = user?.country ?? 'COMMUNAUTÉ ADP';
+    final (roleLabel, isElevated) = switch (user?.role) {
+      MemberRole.admin => ('ADMINISTRATEUR', true),
+      MemberRole.contentCreator => ('CRÉATEUR DE CONTENU', true),
+      _ => ('MEMBRE ADP', false),
+    };
 
     final initials = fullName
         .trim()
@@ -95,13 +101,17 @@ class ProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 5),
                       decoration: BoxDecoration(
-                        color: AdpColors.tealDeep.withValues(alpha: 0.09),
+                        color: isElevated
+                            ? AdpColors.tealDeep
+                            : AdpColors.tealDeep.withValues(alpha: 0.09),
                         borderRadius: BorderRadius.circular(999),
                       ),
-                      child: const Text(
-                        'MEMBRE ADP',
+                      child: Text(
+                        roleLabel,
                         style: TextStyle(
-                          color: AdpColors.tealDeep,
+                          color: isElevated
+                              ? Colors.white
+                              : AdpColors.tealDeep,
                           fontSize: 10.5,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.4,
@@ -222,18 +232,9 @@ class _SupportSection extends StatelessWidget {
       builder: (sheetContext) => _SupportBottomSheet(
         onMessageSent: () {
           Navigator.pop(sheetContext);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Votre message a bien été envoyé au bureau ADP.',
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: AdpColors.tealDeep,
-              shape:
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12))),
-              duration: Duration(seconds: 4),
-            ),
+          AdpFeedback.success(
+            context,
+            title: 'Votre message a bien été envoyé au bureau ADP.',
           );
           AdpHaptic.success();
         },
@@ -532,17 +533,9 @@ class _SupportBottomSheetState extends State<_SupportBottomSheet> {
 
   void _send() {
     if (_subject.text.trim().isEmpty || _message.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Veuillez remplir le sujet et le message.',
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AdpColors.terracotta,
-          shape:
-              RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12))),
-        ),
+      AdpFeedback.info(
+        context,
+        message: 'Veuillez remplir le sujet et le message.',
       );
       return;
     }
@@ -720,17 +713,11 @@ class _DirectoryVisibilityCard extends StatelessWidget {
                     context
                         .read<NetworkingCubit>()
                         .updateVisibility(val);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(val
-                            ? "Visible dans l'annuaire"
-                            : 'Masqué de l\u2019annuaire'),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: AdpColors.ink,
-                        duration: const Duration(seconds: 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
+                    AdpFeedback.info(
+                      context,
+                      message: val
+                          ? "Visible dans l'annuaire"
+                          : 'Masqué de l\u2019annuaire',
                     );
                   },
                 ),
@@ -753,17 +740,16 @@ class _PrivacySection extends StatelessWidget {
         listener: (context, state) {
           if (state.status == ProfileActionStatus.success &&
               state.message != null) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.message!),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: AdpColors.success,
-            ));
+            AdpFeedback.success(
+              context,
+              title: state.message!,
+            );
           } else if (state.status == ProfileActionStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.message ?? 'Une erreur est survenue.'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: AdpColors.terracotta,
-            ));
+            AdpFeedback.failure(
+              context,
+              source: 'Profil',
+              message: state.message ?? 'Une erreur est survenue.',
+            );
           }
         },
         builder: (context, state) {

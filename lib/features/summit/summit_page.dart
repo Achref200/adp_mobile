@@ -1,4 +1,5 @@
 import 'package:adp_mobile/core/design/adp_theme.dart';
+import 'package:adp_mobile/core/widgets/adp_feedback.dart';
 import 'package:flutter/material.dart';
 
 class SummitPage extends StatefulWidget {
@@ -139,18 +140,18 @@ class _SummitPageState extends State<SummitPage> {
                     ),
                     onPressed: () {
                       setState(() => _isRegistered = !_isRegistered);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            _isRegistered
-                                ? 'Inscription confirmée ! Votre badge a été envoyé par email.'
-                                : 'Inscription annulée.',
-                          ),
-                          backgroundColor: _isRegistered ? const Color(0xFF10B981) : AdpColors.navy,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                      );
+                      if (_isRegistered) {
+                        AdpFeedback.success(
+                          context,
+                          title: 'Inscription confirmée !',
+                          detail: 'Votre badge a été envoyé par email.',
+                        );
+                      } else {
+                        AdpFeedback.info(
+                          context,
+                          message: 'Inscription annulée.',
+                        );
+                      }
                     },
                   ),
                 ),
@@ -223,14 +224,9 @@ class _SummitPageState extends State<SummitPage> {
                           _selectedPollOptionId = optId;
                         }
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Vote pris en compte !'),
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: AdpColors.navy,
-                          duration: const Duration(seconds: 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
+                      AdpFeedback.info(
+                        context,
+                        message: 'Vote pris en compte !',
                       );
                     },
                     child: Container(
